@@ -1,10 +1,13 @@
 ﻿from __future__ import annotations
 
+from math import ceil, sqrt
+
 from .astar3d import astar_route
 from .collision import detect_pipe_conflicts, point_distance
-from .grid import Grid3D, GridIndex, inflate_obstacle
+from .grid import Grid3D, GridIndex, inflate_obstacle, is_cell_blocked
 from .io import ClampCandidate, Pipe, RoutingCase
 from .pipe_rules import bend_count, path_length
+from .smooth import smooth_path
 
 
 def _inflate_distance(pipe: Pipe) -> float:
@@ -48,10 +51,118 @@ def _compute_clamp_metrics(
     return used_clamps, min_distance_to_clamps
 
 
+def _path_is_collision_free(
+    grid: Grid3D,
+    path: list[tuple[float, float, float]],
+    inflated_obstacles: list,
+    dynamic_blocks: set[GridIndex],
+) -> bool:
+    if len(path) < 2:
+        return False
+    for i in range(len(path) - 1):
+        a = path[i]
+        b = path[i + 1]
+        seg_len = sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2)
+        samples = max(1, int(ceil(seg_len / max(grid.resolution * 0.5, 1e-6))))
+        for k in range(samples + 1):
+            t = k / samples
+            p = (
+                a[0] + (b[0] - a[0]) * t,
+                a[1] + (b[1] - a[1]) * t,
+                a[2] + (b[2] - a[2]) * t,
+            )
+            if is_cell_blocked(grid, grid.world_to_index(p), inflated_obstacles, dynamic_blocks):
+                return False
+    return True
+
+
+def _count_conflicts_with_previous(
+    candidate_id: str,
+    candidate_path: list[tuple[float, float, float]],
+    previous_results: list[dict],
+    pipe_by_id: dict[str, Pipe],
+) -> int:
+    routed = [p for p in previous_results if p["success"]]
+    routed.append(
+        {
+            "id": candidate_id,
+            "success": True,
+            "path": [list(p) for p in candidate_path],
+        }
+    )
+    conflicts = detect_pipe_conflicts(routed, pipe_by_id)
+    return sum(1 for c in conflicts if c["pipe_a"] == candidate_id or c["pipe_b"] == candidate_id)
+
+
+def _update_pipe_metrics(pipe_result: dict, clamps: list[ClampCandidate]) -> None:
+    path = [tuple(p) for p in pipe_result["path"]]
+    pipe_result["length"] = path_length(path)
+    pipe_result["bend_count"] = bend_count(path)
+    used_clamps, min_distance_to_clamps = _compute_clamp_metrics(path, clamps)
+    pipe_result["used_clamps"] = used_clamps
+    pipe_result["min_distance_to_clamps"] = min_distance_to_clamps
+
+
+def _select_global_paths(results: list[dict], pipe_by_id: dict[str, Pipe], clamps: list[ClampCandidate]) -> list[dict]:
+    success_pipes = [p for p in results if p["success"]]
+    candidates = [
+        p
+        for p in success_pipes
+        if p.get("smoothing_applied")
+        and not p.get("smoothing_reverted")
+        and p.get("raw_path")
+        and p.get("smoothed_path")
+    ]
+
+    if not candidates:
+        return detect_pipe_conflicts(results, pipe_by_id)
+
+    best_conflicts: list[dict] | None = None
+    best_mask = 0
+    best_smoothed_count = -1
+
+    for mask in range(1 << len(candidates)):
+        for idx, pipe in enumerate(candidates):
+            use_smoothed = ((mask >> idx) & 1) == 1
+            pipe["path"] = pipe["smoothed_path"] if use_smoothed else pipe["raw_path"]
+
+        conflicts = detect_pipe_conflicts(results, pipe_by_id)
+        smooth_count = sum(1 for idx in range(len(candidates)) if ((mask >> idx) & 1) == 1)
+        if best_conflicts is None:
+            best_conflicts = conflicts
+            best_mask = mask
+            best_smoothed_count = smooth_count
+            continue
+
+        if len(conflicts) < len(best_conflicts):
+            best_conflicts = conflicts
+            best_mask = mask
+            best_smoothed_count = smooth_count
+        elif len(conflicts) == len(best_conflicts) and smooth_count > best_smoothed_count:
+            best_conflicts = conflicts
+            best_mask = mask
+            best_smoothed_count = smooth_count
+
+    for idx, pipe in enumerate(candidates):
+        use_smoothed = ((best_mask >> idx) & 1) == 1
+        if use_smoothed:
+            pipe["path"] = pipe["smoothed_path"]
+            pipe["smoothing_reverted"] = False
+            pipe["smoothing_revert_reason"] = None
+        else:
+            pipe["path"] = pipe["raw_path"]
+            pipe["smoothing_reverted"] = True
+            pipe["smoothing_revert_reason"] = "final_global_conflict_recheck"
+        _update_pipe_metrics(pipe, clamps)
+
+    return best_conflicts if best_conflicts is not None else detect_pipe_conflicts(results, pipe_by_id)
+
+
 def route_pipes_sequentially(case: RoutingCase) -> dict:
     grid = Grid3D(case.workspace)
     dynamic_blocks: set[GridIndex] = set()
     results: list[dict] = []
+    pipe_by_id = {p.id: p for p in case.pipes}
 
     for pipe in case.pipes:
         inflate_dist = _inflate_distance(pipe)
@@ -64,17 +175,23 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
             inflated_obstacles=inflated_obstacles,
             dynamic_blocks=dynamic_blocks,
             clamp_candidates=clamp_candidates,
+            clamp_reward_weight=0.0,
         )
         if not ares.success:
             results.append(
                 {
                     "id": pipe.id,
                     "success": False,
+                    "raw_path": [],
+                    "smoothed_path": [],
                     "path": [],
                     "length": 0.0,
                     "bend_count": 0,
                     "conflict_count": 0,
                     "conflicts": [],
+                    "smoothing_applied": False,
+                    "smoothing_reverted": False,
+                    "smoothing_revert_reason": None,
                     "used_clamps": [],
                     "min_distance_to_clamps": {},
                     "error": ares.error,
@@ -82,26 +199,61 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
             )
             continue
 
-        length = path_length(ares.path)
-        bends = bend_count(ares.path)
-        used_clamps, min_distance_to_clamps = _compute_clamp_metrics(ares.path, case.clamp_candidates)
+        raw_path = ares.path[:]
+        path_smoothed = smooth_path(
+            grid=grid,
+            path=ares.path,
+            inflated_obstacles=inflated_obstacles,
+            dynamic_blocks=dynamic_blocks,
+        )
+
+        smoothing_applied = path_smoothed != raw_path
+        smoothing_reverted = False
+        smoothing_revert_reason = None
+        final_path = path_smoothed
+
+        if not path_smoothed:
+            smoothing_reverted = smoothing_applied
+            smoothing_revert_reason = "smoothed_path_empty"
+            final_path = raw_path
+        elif not _path_is_collision_free(grid, path_smoothed, inflated_obstacles, dynamic_blocks):
+            smoothing_reverted = smoothing_applied
+            smoothing_revert_reason = "smoothed_path_hits_obstacle"
+            final_path = raw_path
+        else:
+            raw_conflicts = _count_conflicts_with_previous(pipe.id, raw_path, results, pipe_by_id)
+            smooth_conflicts = _count_conflicts_with_previous(pipe.id, path_smoothed, results, pipe_by_id)
+            if smooth_conflicts > raw_conflicts:
+                smoothing_reverted = smoothing_applied
+                smoothing_revert_reason = "smoothed_path_increases_conflicts"
+                final_path = raw_path
+
         result = {
             "id": pipe.id,
             "success": True,
-            "path": [list(p) for p in ares.path],
-            "length": length,
-            "bend_count": bends,
+            "raw_path": [list(p) for p in raw_path],
+            "smoothed_path": [list(p) for p in path_smoothed],
+            "path": [list(p) for p in final_path],
+            "length": 0.0,
+            "bend_count": 0,
             "conflict_count": 0,
             "conflicts": [],
-            "used_clamps": used_clamps,
-            "min_distance_to_clamps": min_distance_to_clamps,
+            "smoothing_applied": smoothing_applied,
+            "smoothing_reverted": smoothing_reverted,
+            "smoothing_revert_reason": smoothing_revert_reason,
+            "used_clamps": [],
+            "min_distance_to_clamps": {},
             "error": None,
         }
+        _update_pipe_metrics(result, case.clamp_candidates)
         results.append(result)
-        dynamic_blocks |= _rasterize_path_to_dynamic_blocks(grid, ares.path, inflate_dist)
+        dynamic_blocks |= _rasterize_path_to_dynamic_blocks(grid, [tuple(p) for p in result["path"]], inflate_dist)
 
-    pipe_by_id = {p.id: p for p in case.pipes}
-    conflicts = detect_pipe_conflicts(results, pipe_by_id)
+    conflicts = _select_global_paths(results, pipe_by_id, case.clamp_candidates)
+
+    for item in results:
+        item["conflicts"] = []
+        item["conflict_count"] = 0
 
     for conflict in conflicts:
         for item in results:

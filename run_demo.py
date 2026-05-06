@@ -12,7 +12,7 @@ def _write_routing_report(result: dict, report_path: Path) -> None:
     pipes = result["pipes"]
     success_count = sum(1 for p in pipes if p["success"])
     total_length = sum(float(p["length"]) for p in pipes if p["success"])
-    total_conflicts = sum(int(p["conflict_count"]) for p in pipes)
+    total_conflicts = len(result.get("conflicts", []))
 
     lines: list[str] = []
     lines.append("# Routing Report")
@@ -33,6 +33,11 @@ def _write_routing_report(result: dict, report_path: Path) -> None:
         lines.append(f"- length: {pipe['length']:.3f}")
         lines.append(f"- bend_count: {pipe['bend_count']}")
         lines.append(f"- conflict_count: {pipe['conflict_count']}")
+        lines.append(f"- smoothing_applied: {pipe.get('smoothing_applied', False)}")
+        lines.append(f"- smoothing_reverted: {pipe.get('smoothing_reverted', False)}")
+        lines.append(f"- smoothing_revert_reason: {pipe.get('smoothing_revert_reason')}")
+        lines.append(f"- raw_point_count: {len(pipe.get('raw_path', []))}")
+        lines.append(f"- smoothed_point_count: {len(pipe.get('smoothed_path', []))}")
         lines.append(f"- used_clamps: {pipe.get('used_clamps', [])}")
         lines.append(f"- min_distance_to_clamps: {pipe.get('min_distance_to_clamps', {})}")
         if not pipe["success"]:
@@ -70,6 +75,7 @@ def main() -> None:
             )
         else:
             print(f"{pipe['id']} success=False error=\"{pipe['error']}\"")
+    print(f"total_conflicts={len(result.get('conflicts', []))}")
 
 
 if __name__ == "__main__":

@@ -54,6 +54,9 @@ pytest -q
 - `conflicts`
 - `used_clamps`: 路径进入 clamp 半径范围的 clamp id 列表
 - `min_distance_to_clamps`: 管路到每个 clamp 的最近距离（字典，key 为 clamp id）
+- `raw_path`: A* 原始路径
+- `smoothed_path`: 平滑后的候选路径
+- `smoothing_applied` / `smoothing_reverted` / `smoothing_revert_reason`: 平滑是否生效、是否回退及原因
 - `error`（失败时）
 
 整体还包含：
@@ -63,6 +66,7 @@ pytest -q
 `outputs/routing_report.md` 由 `run_demo.py` 自动生成，包含：
 - Summary: `total_pipes` / `success_count` / `failed_count` / `total_length` / `total_conflicts`
 - 每根 pipe: `success` / `length` / `bend_count` / `conflict_count` / `used_clamps` / `min_distance_to_clamps` / `error`（失败时）
+- 每根 pipe 还包含平滑信息：`smoothing_applied` / `smoothing_reverted` / `smoothing_revert_reason` / `raw_point_count` / `smoothed_point_count`
 
 ## 10. 当前限制
 - 仅 JSON 输入

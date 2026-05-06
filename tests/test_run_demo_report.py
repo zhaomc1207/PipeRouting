@@ -12,3 +12,7 @@ def test_run_demo_generates_routing_report() -> None:
     assert "success_count" in text
     assert "used_clamps" in text
     assert "min_distance_to_clamps" in text
+    assert "smoothing_applied" in text
+    assert "smoothing_reverted" in text
+    assert "raw_point_count" in text
+    assert "smoothed_point_count" in text

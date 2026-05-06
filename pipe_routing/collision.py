@@ -29,6 +29,7 @@ def segment_segment_distance(p1: Vec3, p2: Vec3, q1: Vec3, q2: Vec3) -> float:
 def detect_pipe_conflicts(
     routed: list[dict],
     pipe_by_id: dict[str, Pipe],
+    distance_tolerance: float = 5.0,
 ) -> list[dict]:
     conflicts: list[dict] = []
     for i in range(len(routed)):
@@ -47,7 +48,7 @@ def detect_pipe_conflicts(
                 for sb in range(len(path_b) - 1):
                     q1, q2 = tuple(path_b[sb]), tuple(path_b[sb + 1])
                     d = segment_segment_distance(p1, p2, q1, q2)
-                    if d < required:
+                    if d + distance_tolerance < required:
                         conflicts.append(
                             {
                                 "pipe_a": a["id"],

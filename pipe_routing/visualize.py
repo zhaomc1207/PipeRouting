@@ -44,7 +44,24 @@ def write_result_html(case: RoutingCase, routing_result: dict, output_path: Path
         ys = [a[1] for a in pts]
         zs = [a[2] for a in pts]
         color = colors[idx % len(colors)]
-        fig.add_trace(go.Scatter3d(x=xs, y=ys, z=zs, mode="lines", line={"color": color, "width": 6}, name=p["id"]))
+        pipe_name = p["id"]
+        if p.get("smoothing_reverted"):
+            pipe_name = f"{pipe_name} (reverted)"
+        fig.add_trace(
+            go.Scatter3d(
+                x=xs,
+                y=ys,
+                z=zs,
+                mode="lines",
+                line={"color": color, "width": 6},
+                name=pipe_name,
+                hovertemplate=(
+                    f"id={p['id']}<br>"
+                    f"smoothing_reverted={p.get('smoothing_reverted', False)}<br>"
+                    f"revert_reason={p.get('smoothing_revert_reason')}<extra></extra>"
+                ),
+            )
+        )
         fig.add_trace(go.Scatter3d(x=[xs[0]], y=[ys[0]], z=[zs[0]], mode="markers", marker={"size": 5, "color": color, "symbol": "circle"}, showlegend=False))
         fig.add_trace(go.Scatter3d(x=[xs[-1]], y=[ys[-1]], z=[zs[-1]], mode="markers", marker={"size": 5, "color": color, "symbol": "diamond"}, showlegend=False))
 
