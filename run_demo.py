@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from pipe_routing.io import load_routing_case
+from pipe_routing.local_reroute import local_reroute
 from pipe_routing.multi_pipe import route_pipes_sequentially
 from pipe_routing.visualize import write_result_html
 
@@ -43,6 +44,8 @@ def _write_routing_report(result: dict, report_path: Path) -> None:
         lines.append(f"- smoothing_revert_reason: {pipe.get('smoothing_revert_reason')}")
         lines.append(f"- raw_point_count: {len(pipe.get('raw_path', []))}")
         lines.append(f"- smoothed_point_count: {len(pipe.get('smoothed_path', []))}")
+        lines.append(f"- rerouted: {pipe.get('rerouted', False)}")
+        lines.append(f"- affected_by_changed_region: {pipe.get('affected_by_changed_region', False)}")
         lines.append(f"- used_clamps: {pipe.get('used_clamps', [])}")
         lines.append(f"- min_distance_to_clamps: {pipe.get('min_distance_to_clamps', {})}")
         if not pipe["success"]:
@@ -85,3 +88,11 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+def demo_local_reroute(changed_region: dict) -> dict:
+    """Optional helper for phase2 local reroute demo without changing default behavior."""
+    root = Path(__file__).resolve().parent
+    case = load_routing_case(root / "data" / "demo_case.json")
+    base = route_pipes_sequentially(case)
+    return local_reroute(case, base, changed_region)

@@ -6,6 +6,7 @@ from .astar3d import astar_route
 from .collision import detect_pipe_conflicts, point_distance
 from .grid import Grid3D, GridIndex, inflate_obstacle, is_cell_blocked
 from .io import ClampCandidate, Pipe, RoutingCase
+from .local_reroute import reroute_single_pipe_locally
 from .pipe_rules import bend_count, path_length, summarize_bend_rules
 from .smooth import smooth_path
 
@@ -211,6 +212,11 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
                     "bend_rule_violation_count": 0,
                     "bend_rule_violations": [],
                     "error": ares.error,
+                    "local_reroute_applied": False,
+                    "local_reroute_reason": None,
+                    "rerouted": False,
+                    "reroute_reason": None,
+                    "affected_by_changed_region": False,
                 }
             )
             continue
@@ -267,12 +273,18 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
             "bend_rule_violation_count": 0,
             "bend_rule_violations": [],
             "error": None,
+            "local_reroute_applied": False,
+            "local_reroute_reason": None,
+            "rerouted": False,
+            "reroute_reason": None,
+            "affected_by_changed_region": False,
         }
         _update_pipe_metrics(result, case.clamp_candidates, pipe)
         results.append(result)
         dynamic_blocks |= _rasterize_path_to_dynamic_blocks(grid, [tuple(p) for p in result["path"]], inflate_dist)
 
     conflicts = _select_global_paths(results, pipe_by_id, case.clamp_candidates)
+    conflicts = _apply_local_reroute(case, grid, results, pipe_by_id, conflicts)
 
     for item in results:
         item["conflicts"] = []
@@ -287,3 +299,69 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
         item["conflict_count"] = len(item["conflicts"])
 
     return {"pipes": results, "conflicts": conflicts}
+
+
+def _apply_local_reroute(
+    case: RoutingCase,
+    grid: Grid3D,
+    results: list[dict],
+    pipe_by_id: dict[str, Pipe],
+    conflicts: list[dict],
+) -> list[dict]:
+    """Try local reroute only when conflict exists; accept only strict global improvement."""
+    if not conflicts:
+        return conflicts
+
+    best_conflicts = conflicts
+    max_rounds = 2
+    for _ in range(max_rounds):
+        conflict_ids = set()
+        for c in best_conflicts:
+            conflict_ids.add(c["pipe_a"])
+            conflict_ids.add(c["pipe_b"])
+        improved = False
+        for pid in list(conflict_ids):
+            item = next((x for x in results if x["id"] == pid and x["success"]), None)
+            if item is None:
+                continue
+            pipe = pipe_by_id[pid]
+            ok, path, err = reroute_single_pipe_locally(grid, case, pipe, results)
+            if not ok or not path:
+                continue
+
+            original_path = item["path"]
+            original_raw = item["raw_path"]
+            original_smoothed = item["smoothed_path"]
+            original_smoothing_applied = item["smoothing_applied"]
+            original_smoothing_reverted = item["smoothing_reverted"]
+            original_smoothing_reason = item["smoothing_revert_reason"]
+
+            item["raw_path"] = [list(p) for p in path]
+            item["smoothed_path"] = [list(p) for p in path]
+            item["path"] = [list(p) for p in path]
+            item["smoothing_applied"] = False
+            item["smoothing_reverted"] = False
+            item["smoothing_revert_reason"] = None
+            item["local_reroute_applied"] = True
+            item["local_reroute_reason"] = "conflict_reduction"
+            _update_pipe_metrics(item, case.clamp_candidates, pipe)
+
+            new_conflicts = detect_pipe_conflicts(results, pipe_by_id)
+            if len(new_conflicts) < len(best_conflicts):
+                best_conflicts = new_conflicts
+                improved = True
+            else:
+                item["path"] = original_path
+                item["raw_path"] = original_raw
+                item["smoothed_path"] = original_smoothed
+                item["smoothing_applied"] = original_smoothing_applied
+                item["smoothing_reverted"] = original_smoothing_reverted
+                item["smoothing_revert_reason"] = original_smoothing_reason
+                item["local_reroute_applied"] = False
+                item["local_reroute_reason"] = err or "no_improvement"
+                _update_pipe_metrics(item, case.clamp_candidates, pipe)
+
+        if not improved:
+            break
+
+    return best_conflicts

@@ -17,6 +17,8 @@ def test_run_demo_generates_routing_report() -> None:
     assert "smoothing_reverted" in text
     assert "raw_point_count" in text
     assert "smoothed_point_count" in text
+    assert "rerouted" in text
+    assert "affected_by_changed_region" in text
     assert "min_bend_radius_required" in text
     assert "min_bend_radius_observed" in text
     assert "bend_rule_violation_count" in text

@@ -34,6 +34,11 @@ def test_multi_pipe_fields() -> None:
         assert "min_bend_radius_observed" in p
         assert "bend_rule_violation_count" in p
         assert "bend_rule_violations" in p
+        assert "local_reroute_applied" in p
+        assert "local_reroute_reason" in p
+        assert "rerouted" in p
+        assert "reroute_reason" in p
+        assert "affected_by_changed_region" in p
 
 
 def test_multi_pipe_clamp_metrics_keys() -> None:
@@ -132,3 +137,9 @@ def test_demo_case_total_conflicts_zero() -> None:
     result = route_pipes_sequentially(case)
     assert len(result["conflicts"]) == 0
     assert all(p["conflict_count"] == 0 for p in result["pipes"] if p["success"])
+
+
+def test_local_reroute_not_applied_when_no_conflicts() -> None:
+    case = load_routing_case(Path("data/demo_case.json"))
+    result = route_pipes_sequentially(case)
+    assert all(p["local_reroute_applied"] is False for p in result["pipes"] if p["success"])

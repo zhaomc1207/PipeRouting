@@ -9,6 +9,7 @@ from .io import (
     load_routing_case,
 )
 from .multi_pipe import route_pipes_sequentially
+from .local_reroute import find_affected_pipes, local_reroute, path_intersects_box
 from .smooth import smooth_path
 
 __all__ = [
@@ -19,5 +20,8 @@ __all__ = [
     "RoutingCase",
     "load_routing_case",
     "route_pipes_sequentially",
+    "path_intersects_box",
+    "find_affected_pipes",
+    "local_reroute",
     "smooth_path",
 ]

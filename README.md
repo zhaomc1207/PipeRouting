@@ -74,6 +74,12 @@ pytest -q
 - 这是 MVP 级制造规则检查，不等价于真实弯管工艺仿真。
 - 后续可替换为更严格的曲线/样条曲率连续检查。
 
+## 13. 局部重算（MVP）
+- 当前提供 MVP 级 local reroute，入口在 `pipe_routing/local_reroute.py`。
+- `changed_region` 第一版只支持 `type=box`。
+- 未受影响管路保持原路径不变，并作为动态障碍物参与受影响管路重算。
+- 受影响管路重新运行寻路、平滑与规则检查。
+
 ## 10. 当前限制
 - 仅 JSON 输入
 - 仅 box 障碍物
