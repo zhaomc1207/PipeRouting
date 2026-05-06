@@ -13,6 +13,7 @@
 - 管-管冲突检测
 - `outputs/result.json` 输出
 - Plotly 生成 `outputs/result.html`
+- Markdown 报告 `outputs/routing_report.md`
 - pytest 基础测试
 
 ## 3. Windows + conda 环境
@@ -51,19 +52,26 @@ pytest -q
 - `bend_count`
 - `conflict_count`
 - `conflicts`
+- `used_clamps`: 路径进入 clamp 半径范围的 clamp id 列表
+- `min_distance_to_clamps`: 管路到每个 clamp 的最近距离（字典，key 为 clamp id）
 - `error`（失败时）
 
 整体还包含：
 - `conflicts`: 全局冲突列表
 
-## 9. 当前限制
+## 9. routing_report.md 说明
+`outputs/routing_report.md` 由 `run_demo.py` 自动生成，包含：
+- Summary: `total_pipes` / `success_count` / `failed_count` / `total_length` / `total_conflicts`
+- 每根 pipe: `success` / `length` / `bend_count` / `conflict_count` / `used_clamps` / `min_distance_to_clamps` / `error`（失败时）
+
+## 10. 当前限制
 - 仅 JSON 输入
 - 仅 box 障碍物
 - 不接 CATIA / STP / STEP / OBJ / STL
 - 不做 GUI、Web、数据库、ROS
 
-## 10. 后续扩展方向
-1. 固定点奖励
+## 11. 后续扩展方向
+1. 固定点奖励增强和强制 waypoint
 2. 更严格弯曲半径
 3. 路径平滑
 4. 局部重算

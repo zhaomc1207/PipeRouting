@@ -1,9 +1,9 @@
 ﻿from __future__ import annotations
 
 from .astar3d import astar_route
-from .collision import detect_pipe_conflicts
+from .collision import detect_pipe_conflicts, point_distance
 from .grid import Grid3D, GridIndex, inflate_obstacle
-from .io import Pipe, RoutingCase
+from .io import ClampCandidate, Pipe, RoutingCase
 from .pipe_rules import bend_count, path_length
 
 
@@ -27,6 +27,25 @@ def _rasterize_path_to_dynamic_blocks(
                     if grid.in_bounds(idx):
                         blocks.add(idx)
     return blocks
+
+
+def _compute_clamp_metrics(
+    path: list[tuple[float, float, float]],
+    clamps: list[ClampCandidate],
+) -> tuple[list[str], dict[str, float]]:
+    if not path:
+        return [], {}
+
+    used_clamps: list[str] = []
+    min_distance_to_clamps: dict[str, float] = {}
+
+    for clamp in clamps:
+        min_d = min(point_distance(pt, clamp.position) for pt in path)
+        min_distance_to_clamps[clamp.id] = min_d
+        if min_d <= clamp.radius:
+            used_clamps.append(clamp.id)
+
+    return used_clamps, min_distance_to_clamps
 
 
 def route_pipes_sequentially(case: RoutingCase) -> dict:
@@ -56,6 +75,8 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
                     "bend_count": 0,
                     "conflict_count": 0,
                     "conflicts": [],
+                    "used_clamps": [],
+                    "min_distance_to_clamps": {},
                     "error": ares.error,
                 }
             )
@@ -63,6 +84,7 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
 
         length = path_length(ares.path)
         bends = bend_count(ares.path)
+        used_clamps, min_distance_to_clamps = _compute_clamp_metrics(ares.path, case.clamp_candidates)
         result = {
             "id": pipe.id,
             "success": True,
@@ -71,6 +93,8 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
             "bend_count": bends,
             "conflict_count": 0,
             "conflicts": [],
+            "used_clamps": used_clamps,
+            "min_distance_to_clamps": min_distance_to_clamps,
             "error": None,
         }
         results.append(result)
