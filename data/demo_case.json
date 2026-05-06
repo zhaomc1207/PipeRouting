@@ -1,0 +1,59 @@
+﻿{
+  "workspace": {
+    "min": [0, 0, 0],
+    "max": [1000, 800, 600],
+    "resolution": 20
+  },
+  "obstacles": [
+    {
+      "id": "engine",
+      "type": "box",
+      "min": [320, 260, 120],
+      "max": [520, 500, 380]
+    },
+    {
+      "id": "battery",
+      "type": "box",
+      "min": [620, 120, 80],
+      "max": [780, 300, 260]
+    }
+  ],
+  "pipes": [
+    {
+      "id": "pipe_1",
+      "start": [60, 120, 120],
+      "end": [920, 620, 320],
+      "diameter": 20,
+      "clearance": 15,
+      "min_bend_radius": 60
+    },
+    {
+      "id": "pipe_2",
+      "start": [80, 220, 100],
+      "end": [900, 700, 260],
+      "diameter": 18,
+      "clearance": 15,
+      "min_bend_radius": 50
+    },
+    {
+      "id": "pipe_3",
+      "start": [120, 80, 80],
+      "end": [880, 540, 420],
+      "diameter": 16,
+      "clearance": 12,
+      "min_bend_radius": 50
+    }
+  ],
+  "clamp_candidates": [
+    {
+      "id": "clamp_1",
+      "position": [260, 180, 180],
+      "radius": 80
+    },
+    {
+      "id": "clamp_2",
+      "position": [560, 560, 240],
+      "radius": 90
+    }
+  ]
+}
