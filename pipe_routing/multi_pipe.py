@@ -6,7 +6,7 @@ from .astar3d import astar_route
 from .collision import detect_pipe_conflicts, point_distance
 from .grid import Grid3D, GridIndex, inflate_obstacle, is_cell_blocked
 from .io import ClampCandidate, Pipe, RoutingCase
-from .pipe_rules import bend_count, path_length
+from .pipe_rules import bend_count, path_length, summarize_bend_rules
 from .smooth import smooth_path
 
 
@@ -94,10 +94,19 @@ def _count_conflicts_with_previous(
     return sum(1 for c in conflicts if c["pipe_a"] == candidate_id or c["pipe_b"] == candidate_id)
 
 
-def _update_pipe_metrics(pipe_result: dict, clamps: list[ClampCandidate]) -> None:
+def _update_pipe_metrics(pipe_result: dict, clamps: list[ClampCandidate], pipe_spec: Pipe) -> None:
     path = [tuple(p) for p in pipe_result["path"]]
     pipe_result["length"] = path_length(path)
     pipe_result["bend_count"] = bend_count(path)
+    bend_check = summarize_bend_rules(path, pipe_spec.min_bend_radius)
+    pipe_result["min_bend_radius_required"] = bend_check["min_bend_radius_required"]
+    pipe_result["min_bend_radius_observed"] = bend_check["min_bend_radius_observed"]
+    pipe_result["bend_rule_violation_count"] = bend_check["bend_rule_violation_count"]
+    pipe_result["bend_rule_violations"] = bend_check["bend_rule_violations"]
+    # Backward-compatible fields
+    pipe_result["min_bend_radius_ok"] = bend_check["min_bend_radius_ok"]
+    pipe_result["bend_radius_violation_count"] = bend_check["bend_radius_violation_count"]
+    pipe_result["bend_radius_violations"] = bend_check["bend_radius_violations"]
     used_clamps, min_distance_to_clamps = _compute_clamp_metrics(path, clamps)
     pipe_result["used_clamps"] = used_clamps
     pipe_result["min_distance_to_clamps"] = min_distance_to_clamps
@@ -153,7 +162,7 @@ def _select_global_paths(results: list[dict], pipe_by_id: dict[str, Pipe], clamp
             pipe["path"] = pipe["raw_path"]
             pipe["smoothing_reverted"] = True
             pipe["smoothing_revert_reason"] = "final_global_conflict_recheck"
-        _update_pipe_metrics(pipe, clamps)
+        _update_pipe_metrics(pipe, clamps, pipe_by_id[pipe["id"]])
 
     return best_conflicts if best_conflicts is not None else detect_pipe_conflicts(results, pipe_by_id)
 
@@ -194,6 +203,13 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
                     "smoothing_revert_reason": None,
                     "used_clamps": [],
                     "min_distance_to_clamps": {},
+                    "min_bend_radius_ok": True,
+                    "bend_radius_violation_count": 0,
+                    "bend_radius_violations": [],
+                    "min_bend_radius_required": pipe.min_bend_radius,
+                    "min_bend_radius_observed": float("inf"),
+                    "bend_rule_violation_count": 0,
+                    "bend_rule_violations": [],
                     "error": ares.error,
                 }
             )
@@ -243,9 +259,16 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
             "smoothing_revert_reason": smoothing_revert_reason,
             "used_clamps": [],
             "min_distance_to_clamps": {},
+            "min_bend_radius_ok": True,
+            "bend_radius_violation_count": 0,
+            "bend_radius_violations": [],
+            "min_bend_radius_required": pipe.min_bend_radius,
+            "min_bend_radius_observed": float("inf"),
+            "bend_rule_violation_count": 0,
+            "bend_rule_violations": [],
             "error": None,
         }
-        _update_pipe_metrics(result, case.clamp_candidates)
+        _update_pipe_metrics(result, case.clamp_candidates, pipe)
         results.append(result)
         dynamic_blocks |= _rasterize_path_to_dynamic_blocks(grid, [tuple(p) for p in result["path"]], inflate_dist)
 

@@ -64,6 +64,32 @@ def write_result_html(case: RoutingCase, routing_result: dict, output_path: Path
         )
         fig.add_trace(go.Scatter3d(x=[xs[0]], y=[ys[0]], z=[zs[0]], mode="markers", marker={"size": 5, "color": color, "symbol": "circle"}, showlegend=False))
         fig.add_trace(go.Scatter3d(x=[xs[-1]], y=[ys[-1]], z=[zs[-1]], mode="markers", marker={"size": 5, "color": color, "symbol": "diamond"}, showlegend=False))
+        violations = p.get("bend_rule_violations", [])
+        if violations:
+            vx = [v["point"][0] for v in violations]
+            vy = [v["point"][1] for v in violations]
+            vz = [v["point"][2] for v in violations]
+            hover_text = [
+                (
+                    f"pipe={p['id']}<br>"
+                    f"point_index={v.get('point_index')}<br>"
+                    f"estimated_radius={v.get('estimated_radius'):.3f}<br>"
+                    f"required_radius={v.get('required_radius'):.3f}"
+                )
+                for v in violations
+            ]
+            fig.add_trace(
+                go.Scatter3d(
+                    x=vx,
+                    y=vy,
+                    z=vz,
+                    mode="markers",
+                    marker={"size": 7, "color": "red", "symbol": "x"},
+                    text=hover_text,
+                    hovertemplate="%{text}<extra></extra>",
+                    name=f"{p['id']}_bend_violations",
+                )
+            )
 
     if case.clamp_candidates:
         cx = [c.position[0] for c in case.clamp_candidates]

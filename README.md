@@ -67,6 +67,12 @@ pytest -q
 - Summary: `total_pipes` / `success_count` / `failed_count` / `total_length` / `total_conflicts`
 - 每根 pipe: `success` / `length` / `bend_count` / `conflict_count` / `used_clamps` / `min_distance_to_clamps` / `error`（失败时）
 - 每根 pipe 还包含平滑信息：`smoothing_applied` / `smoothing_reverted` / `smoothing_revert_reason` / `raw_point_count` / `smoothed_point_count`
+- 弯曲规则字段：`min_bend_radius_required` / `min_bend_radius_observed` / `bend_rule_violation_count` / `bend_rule_violations`
+
+## 12. 最小弯曲半径检查说明
+- 当前实现基于路径连续三点的几何估算（外接圆半径）。
+- 这是 MVP 级制造规则检查，不等价于真实弯管工艺仿真。
+- 后续可替换为更严格的曲线/样条曲率连续检查。
 
 ## 10. 当前限制
 - 仅 JSON 输入

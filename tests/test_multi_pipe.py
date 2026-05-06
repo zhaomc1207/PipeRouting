@@ -27,6 +27,13 @@ def test_multi_pipe_fields() -> None:
         assert "smoothing_revert_reason" in p
         assert "used_clamps" in p
         assert "min_distance_to_clamps" in p
+        assert "min_bend_radius_ok" in p
+        assert "bend_radius_violation_count" in p
+        assert "bend_radius_violations" in p
+        assert "min_bend_radius_required" in p
+        assert "min_bend_radius_observed" in p
+        assert "bend_rule_violation_count" in p
+        assert "bend_rule_violations" in p
 
 
 def test_multi_pipe_clamp_metrics_keys() -> None:
