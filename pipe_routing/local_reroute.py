@@ -57,12 +57,17 @@ def _path_is_collision_free(
     return True
 
 
-def _compute_clamp_metrics(path: list[tuple[float, float, float]], case: RoutingCase) -> tuple[list[str], dict[str, float]]:
+def _compute_clamp_metrics_for_pipe(
+    path: list[tuple[float, float, float]],
+    case: RoutingCase,
+    pipe_id: str,
+) -> tuple[list[str], dict[str, float]]:
     if not path:
         return [], {}
     used_clamps: list[str] = []
     min_distance_to_clamps: dict[str, float] = {}
-    for clamp in case.clamp_candidates:
+    related = [c for c in case.clamp_candidates if not c.applies_to or pipe_id in c.applies_to]
+    for clamp in related:
         min_d = min(point_distance(pt, clamp.position) for pt in path)
         min_distance_to_clamps[clamp.id] = min_d
         if min_d <= clamp.radius:
@@ -198,8 +203,8 @@ def local_reroute(case: RoutingCase, previous_results: dict, changed_region: dic
             end_world=pipe.end,
             inflated_obstacles=inflated_obstacles,
             dynamic_blocks=dynamic_blocks,
-            clamp_candidates=[(c.position, c.radius) for c in case.clamp_candidates],
-            clamp_reward_weight=0.0,
+            clamp_candidates=[(c.position, c.radius) for c in case.clamp_candidates if not c.applies_to or pipe.id in c.applies_to],
+            clamp_reward_weight=35.0,
         )
 
         if not ret.success or not ret.path:
@@ -220,7 +225,19 @@ def local_reroute(case: RoutingCase, previous_results: dict, changed_region: dic
             continue
 
         raw_path = ret.path[:]
-        smoothed = smooth_path(grid, raw_path, inflated_obstacles, dynamic_blocks)
+        own_clamps = [c for c in case.clamp_candidates if not c.applies_to or pipe.id in c.applies_to]
+        protected: list[tuple[float, float, float]] = []
+        for c in own_clamps:
+            best = None
+            best_d = float("inf")
+            for p in raw_path:
+                d = point_distance(p, c.position)
+                if d <= c.radius and d < best_d:
+                    best_d = d
+                    best = p
+            if best is not None:
+                protected.append(best)
+        smoothed = smooth_path(grid, raw_path, inflated_obstacles, dynamic_blocks, protected_points=protected)
         final_path = smoothed if smoothed and _path_is_collision_free(grid, smoothed, inflated_obstacles, dynamic_blocks) else raw_path
         rec = _build_result_record(pipe, final_path, True, "affected_by_changed_region", True)
         rec["raw_path"] = [list(p) for p in raw_path]
@@ -233,7 +250,7 @@ def local_reroute(case: RoutingCase, previous_results: dict, changed_region: dic
         rec["local_reroute_reason"] = "affected_by_changed_region"
         rec["rerouted"] = True
         rec["reroute_reason"] = "affected_by_changed_region"
-        used_clamps, min_distance_to_clamps = _compute_clamp_metrics(final_path, case)
+        used_clamps, min_distance_to_clamps = _compute_clamp_metrics_for_pipe(final_path, case, pipe.id)
         rec["used_clamps"] = used_clamps
         rec["min_distance_to_clamps"] = min_distance_to_clamps
         bend = summarize_bend_rules(final_path, pipe.min_bend_radius)
@@ -309,8 +326,8 @@ def reroute_single_pipe_locally(
         end_world=pipe.end,
         inflated_obstacles=inflated_obstacles,
         dynamic_blocks=dynamic_blocks,
-        clamp_candidates=[(c.position, c.radius) for c in case.clamp_candidates],
-        clamp_reward_weight=0.0,
+        clamp_candidates=[(c.position, c.radius) for c in case.clamp_candidates if not c.applies_to or pipe.id in c.applies_to],
+        clamp_reward_weight=35.0,
         turn_penalty=0.4,
     )
     return ret.success, ret.path, ret.error

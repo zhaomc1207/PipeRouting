@@ -1,0 +1,52 @@
+{
+  "pipes": [
+    {
+      "id": "pipe_1",
+      "success": false,
+      "raw_path": [],
+      "smoothed_path": [],
+      "path": [],
+      "length": 0.0,
+      "bend_count": 0,
+      "conflict_count": 0,
+      "conflicts": [],
+      "smoothing_applied": false,
+      "smoothing_reverted": false,
+      "smoothing_revert_reason": null,
+      "used_clamps": [],
+      "min_distance_to_clamps": {},
+      "own_clamps": [
+        "clamp_pipe_1_1"
+      ],
+      "missed_clamps": [
+        "clamp_pipe_1_1"
+      ],
+      "min_bend_radius_ok": true,
+      "bend_radius_violation_count": 0,
+      "bend_radius_violations": [],
+      "min_bend_radius_required": 30.0,
+      "min_bend_radius_observed": Infinity,
+      "bend_rule_violation_count": 0,
+      "bend_rule_violations": [],
+      "error": "No path found.",
+      "local_reroute_applied": false,
+      "local_reroute_reason": null,
+      "rerouted": false,
+      "reroute_reason": null,
+      "affected_by_changed_region": false,
+      "cbs_fallback_applied": false,
+      "cbs_fallback_reason": null,
+      "cbs_rerouted": false,
+      "cbs_constraints_count": 0,
+      "cbs_reroute_reason": null
+    }
+  ],
+  "conflicts": [],
+  "cbs_enabled": true,
+  "cbs_iterations": 0,
+  "cbs_resolved_conflicts": 0,
+  "cbs_remaining_conflicts": 0,
+  "cbs_log": [
+    "No conflicts detected; CBS exits immediately."
+  ]
+}

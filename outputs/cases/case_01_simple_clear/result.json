@@ -1,0 +1,287 @@
+{
+  "pipes": [
+    {
+      "id": "pipe_1",
+      "success": true,
+      "raw_path": [
+        [
+          80.0,
+          100.0,
+          100.0
+        ],
+        [
+          100.0,
+          120.0,
+          100.0
+        ],
+        [
+          120.0,
+          140.0,
+          100.0
+        ],
+        [
+          140.0,
+          160.0,
+          100.0
+        ],
+        [
+          160.0,
+          180.0,
+          100.0
+        ],
+        [
+          180.0,
+          200.0,
+          100.0
+        ],
+        [
+          200.0,
+          220.0,
+          100.0
+        ],
+        [
+          220.0,
+          240.0,
+          100.0
+        ],
+        [
+          240.0,
+          260.0,
+          100.0
+        ],
+        [
+          260.0,
+          280.0,
+          100.0
+        ],
+        [
+          280.0,
+          300.0,
+          100.0
+        ],
+        [
+          300.0,
+          320.0,
+          100.0
+        ],
+        [
+          320.0,
+          340.0,
+          100.0
+        ],
+        [
+          340.0,
+          360.0,
+          100.0
+        ],
+        [
+          360.0,
+          380.0,
+          100.0
+        ],
+        [
+          380.0,
+          400.0,
+          100.0
+        ],
+        [
+          400.0,
+          420.0,
+          100.0
+        ],
+        [
+          420.0,
+          440.0,
+          100.0
+        ],
+        [
+          440.0,
+          460.0,
+          100.0
+        ],
+        [
+          460.0,
+          480.0,
+          100.0
+        ],
+        [
+          480.0,
+          500.0,
+          100.0
+        ],
+        [
+          500.0,
+          520.0,
+          100.0
+        ],
+        [
+          520.0,
+          540.0,
+          100.0
+        ],
+        [
+          540.0,
+          560.0,
+          100.0
+        ],
+        [
+          560.0,
+          580.0,
+          100.0
+        ],
+        [
+          580.0,
+          600.0,
+          100.0
+        ],
+        [
+          600.0,
+          620.0,
+          100.0
+        ],
+        [
+          620.0,
+          640.0,
+          100.0
+        ],
+        [
+          640.0,
+          660.0,
+          100.0
+        ],
+        [
+          660.0,
+          680.0,
+          100.0
+        ],
+        [
+          680.0,
+          700.0,
+          100.0
+        ],
+        [
+          700.0,
+          700.0,
+          120.0
+        ],
+        [
+          720.0,
+          700.0,
+          140.0
+        ],
+        [
+          740.0,
+          700.0,
+          160.0
+        ],
+        [
+          760.0,
+          700.0,
+          180.0
+        ],
+        [
+          780.0,
+          700.0,
+          200.0
+        ],
+        [
+          800.0,
+          700.0,
+          220.0
+        ],
+        [
+          820.0,
+          700.0,
+          240.0
+        ],
+        [
+          840.0,
+          700.0,
+          260.0
+        ],
+        [
+          860.0,
+          700.0,
+          280.0
+        ],
+        [
+          880.0,
+          700.0,
+          300.0
+        ],
+        [
+          900.0,
+          700.0,
+          300.0
+        ]
+      ],
+      "smoothed_path": [
+        [
+          80.0,
+          100.0,
+          100.0
+        ],
+        [
+          900.0,
+          700.0,
+          300.0
+        ]
+      ],
+      "path": [
+        [
+          80.0,
+          100.0,
+          100.0
+        ],
+        [
+          900.0,
+          700.0,
+          300.0
+        ]
+      ],
+      "length": 1035.5674772799694,
+      "bend_count": 0,
+      "conflict_count": 0,
+      "conflicts": [],
+      "smoothing_applied": true,
+      "smoothing_reverted": false,
+      "smoothing_revert_reason": null,
+      "used_clamps": [],
+      "min_distance_to_clamps": {
+        "clamp_1": 509.9019513592785
+      },
+      "own_clamps": [
+        "clamp_1"
+      ],
+      "missed_clamps": [
+        "clamp_1"
+      ],
+      "min_bend_radius_ok": true,
+      "bend_radius_violation_count": 0,
+      "bend_radius_violations": [],
+      "min_bend_radius_required": 50.0,
+      "min_bend_radius_observed": Infinity,
+      "bend_rule_violation_count": 0,
+      "bend_rule_violations": [],
+      "error": null,
+      "local_reroute_applied": false,
+      "local_reroute_reason": null,
+      "rerouted": false,
+      "reroute_reason": null,
+      "affected_by_changed_region": false,
+      "cbs_fallback_applied": false,
+      "cbs_fallback_reason": null,
+      "cbs_rerouted": false,
+      "cbs_constraints_count": 0,
+      "cbs_reroute_reason": null
+    }
+  ],
+  "conflicts": [],
+  "cbs_enabled": true,
+  "cbs_iterations": 0,
+  "cbs_resolved_conflicts": 0,
+  "cbs_remaining_conflicts": 0,
+  "cbs_log": [
+    "No conflicts detected; CBS exits immediately."
+  ]
+}

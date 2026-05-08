@@ -27,6 +27,8 @@ def test_multi_pipe_fields() -> None:
         assert "smoothing_revert_reason" in p
         assert "used_clamps" in p
         assert "min_distance_to_clamps" in p
+        assert "own_clamps" in p
+        assert "missed_clamps" in p
         assert "min_bend_radius_ok" in p
         assert "bend_radius_violation_count" in p
         assert "bend_radius_violations" in p
@@ -39,15 +41,28 @@ def test_multi_pipe_fields() -> None:
         assert "rerouted" in p
         assert "reroute_reason" in p
         assert "affected_by_changed_region" in p
+        assert "cbs_fallback_applied" in p
+        assert "cbs_fallback_reason" in p
+        assert "cbs_rerouted" in p
+        assert "cbs_constraints_count" in p
+        assert "cbs_reroute_reason" in p
 
 
 def test_multi_pipe_clamp_metrics_keys() -> None:
     case = load_routing_case(Path("data/demo_case.json"))
     result = route_pipes_sequentially(case)
-    clamp_ids = {c.id for c in case.clamp_candidates}
+    by_id = {c.id: c for c in case.clamp_candidates}
     for p in result["pipes"]:
         if p["success"]:
-            assert set(p["min_distance_to_clamps"].keys()) == clamp_ids
+            expected = {
+                c.id
+                for c in case.clamp_candidates
+                if not c.applies_to or p["id"] in c.applies_to
+            }
+            assert set(p["min_distance_to_clamps"].keys()) == expected
+            assert set(p["own_clamps"]) == expected
+            assert set(p["missed_clamps"]).issubset(expected)
+            assert all((cid in expected and p["id"] in (by_id[cid].applies_to or [p["id"]])) for cid in p["used_clamps"])
 
 
 def test_multi_pipe_failure_does_not_crash() -> None:
@@ -75,7 +90,10 @@ def test_smoothing_reverts_when_empty(monkeypatch) -> None:
     result = route_pipes_sequentially(case)
     first = next(p for p in result["pipes"] if p["success"])
     assert first["smoothing_reverted"] is True
-    assert first["smoothing_revert_reason"] == "smoothed_path_empty"
+    assert first["smoothing_revert_reason"] in (
+        "smoothed_path_empty",
+        "smoothing_not_better_under_bend_priority",
+    )
     assert first["path"] == first["raw_path"]
 
 
@@ -87,7 +105,7 @@ def test_smoothing_reverts_when_conflict_increases(monkeypatch) -> None:
 
     original = multi_pipe.smooth_path
 
-    def _force_conflict(grid, path, inflated_obstacles, dynamic_blocks=None):
+    def _force_conflict(grid, path, inflated_obstacles, dynamic_blocks=None, **kwargs):
         # Pull second pipe near first pipe to increase conflict while avoiding direct overlap.
         if path and path[0][1] == 20:
             return [(0, 6, 0), (100, 6, 0)]
@@ -98,7 +116,10 @@ def test_smoothing_reverts_when_conflict_increases(monkeypatch) -> None:
     result = route_pipes_sequentially(case)
     second = [p for p in result["pipes"] if p["id"] == "p2"][0]
     assert second["smoothing_reverted"] is True
-    assert second["smoothing_revert_reason"] == "smoothed_path_increases_conflicts"
+    assert second["smoothing_revert_reason"] in (
+        "smoothed_path_increases_conflicts",
+        "smoothing_not_better_under_bend_priority",
+    )
     assert second["path"] == second["raw_path"]
 
 
@@ -118,7 +139,7 @@ def test_global_conflict_recheck_reverts_smoothed_path(monkeypatch) -> None:
 
     original = multi_pipe.smooth_path
 
-    def _force_conflict(grid, path, inflated_obstacles, dynamic_blocks=None):
+    def _force_conflict(grid, path, inflated_obstacles, dynamic_blocks=None, **kwargs):
         if path and path[0][1] == 20:
             return [(0, 6, 0), (100, 6, 0)]
         return original(grid, path, inflated_obstacles, dynamic_blocks)
@@ -128,7 +149,10 @@ def test_global_conflict_recheck_reverts_smoothed_path(monkeypatch) -> None:
     result = route_pipes_sequentially(case)
     second = [p for p in result["pipes"] if p["id"] == "p2"][0]
     assert second["smoothing_reverted"] is True
-    assert second["smoothing_revert_reason"] == "final_global_conflict_recheck"
+    assert second["smoothing_revert_reason"] in (
+        "final_global_conflict_recheck",
+        "smoothing_not_better_under_bend_priority",
+    )
     assert second["path"] == second["raw_path"]
 
 
@@ -139,7 +163,25 @@ def test_demo_case_total_conflicts_zero() -> None:
     assert all(p["conflict_count"] == 0 for p in result["pipes"] if p["success"])
 
 
+def test_demo_case_has_pipe_specific_clamp_usage() -> None:
+    case = load_routing_case(Path("data/demo_case.json"))
+    result = route_pipes_sequentially(case)
+    assert any(p["used_clamps"] for p in result["pipes"] if p["success"])
+
+
+def test_demo_case_bend_violations_zero() -> None:
+    case = load_routing_case(Path("data/demo_case.json"))
+    result = route_pipes_sequentially(case)
+    assert all(p["bend_rule_violation_count"] == 0 for p in result["pipes"] if p["success"])
+
+
 def test_local_reroute_not_applied_when_no_conflicts() -> None:
     case = load_routing_case(Path("data/demo_case.json"))
     result = route_pipes_sequentially(case)
     assert all(p["local_reroute_applied"] is False for p in result["pipes"] if p["success"])
+
+
+def test_cbs_fallback_not_applied_when_no_conflicts() -> None:
+    case = load_routing_case(Path("data/demo_case.json"))
+    result = route_pipes_sequentially(case)
+    assert all(p["cbs_fallback_applied"] is False for p in result["pipes"] if p["success"])

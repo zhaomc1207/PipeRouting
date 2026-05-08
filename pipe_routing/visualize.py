@@ -315,10 +315,39 @@ def write_result_html(
             )
 
     if case.clamp_candidates:
-        cx = [c.position[0] for c in case.clamp_candidates]
-        cy = [c.position[1] for c in case.clamp_candidates]
-        cz = [c.position[2] for c in case.clamp_candidates]
-        fig.add_trace(go.Scatter3d(x=cx, y=cy, z=cz, mode="markers", marker={"size": 4, "color": "black"}, name="clamp_candidates"))
+        pipe_color = {p["id"]: colors[i % len(colors)] for i, p in enumerate(routing_result["pipes"])}
+        clamp_usage = routing_result.get("clamp_usage", {})
+        for c in case.clamp_candidates:
+            cu = clamp_usage.get(c.id, {})
+            applies_to = cu.get("applies_to", c.applies_to if c.applies_to else [])
+            used_by = cu.get("used_by", [])
+            if not applies_to:
+                color = "black"
+            elif len(applies_to) == 1:
+                color = pipe_color.get(applies_to[0], "black")
+            else:
+                color = "purple"
+            size = 7 if used_by else 4
+            opacity = 1.0 if used_by else 0.45
+            hover = (
+                f"id={c.id}<br>"
+                f"applies_to={applies_to}<br>"
+                f"used_by={used_by}<br>"
+                "soft constraint only<extra></extra>"
+            )
+            fig.add_trace(
+                go.Scatter3d(
+                    x=[c.position[0]],
+                    y=[c.position[1]],
+                    z=[c.position[2]],
+                    mode="markers+text",
+                    marker={"size": size, "color": color, "opacity": opacity},
+                    text=[c.id],
+                    textposition="top center",
+                    hovertemplate=hover,
+                    name=f"clamp_{c.id}",
+                )
+            )
 
     if routing_result.get("conflicts"):
         conflict_points_x = []

@@ -1,0 +1,48 @@
+{
+  "workspace": {
+    "min": [
+      0,
+      0,
+      0
+    ],
+    "max": [
+      1000,
+      800,
+      600
+    ],
+    "resolution": 20
+  },
+  "obstacles": [],
+  "pipes": [
+    {
+      "id": "pipe_1",
+      "start": [
+        80,
+        100,
+        100
+      ],
+      "end": [
+        900,
+        700,
+        300
+      ],
+      "diameter": 20,
+      "clearance": 10,
+      "min_bend_radius": 50
+    }
+  ],
+  "clamp_candidates": [
+    {
+      "id": "clamp_1",
+      "position": [
+        500,
+        400,
+        200
+      ],
+      "radius": 120,
+      "applies_to": [
+        "pipe_1"
+      ]
+    }
+  ]
+}

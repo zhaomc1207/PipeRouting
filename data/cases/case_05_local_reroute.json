@@ -94,39 +94,27 @@
   ],
   "clamp_candidates": [
     {
-      "id": "clamp_p1_1",
+      "id": "clamp_1",
       "position": [
-        560,
-        320,
-        80
+        260,
+        180,
+        180
       ],
-      "radius": 100,
+      "radius": 80,
       "applies_to": [
         "pipe_1"
       ]
     },
     {
-      "id": "clamp_p2_1",
+      "id": "clamp_2",
       "position": [
-        660,
-        460,
-        60
+        560,
+        560,
+        240
       ],
       "radius": 90,
       "applies_to": [
         "pipe_2"
-      ]
-    },
-    {
-      "id": "clamp_p3_1",
-      "position": [
-        720,
-        280,
-        560
-      ],
-      "radius": 120,
-      "applies_to": [
-        "pipe_3"
       ]
     }
   ]

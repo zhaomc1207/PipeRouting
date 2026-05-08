@@ -3,6 +3,7 @@
 from math import ceil, sqrt
 
 from .astar3d import astar_route
+from .cbs_fallback import apply_simplified_cbs_fallback
 from .collision import detect_pipe_conflicts, point_distance
 from .grid import Grid3D, GridIndex, inflate_obstacle, is_cell_blocked
 from .io import ClampCandidate, Pipe, RoutingCase
@@ -36,20 +37,43 @@ def _rasterize_path_to_dynamic_blocks(
 def _compute_clamp_metrics(
     path: list[tuple[float, float, float]],
     clamps: list[ClampCandidate],
+    pipe_id: str,
 ) -> tuple[list[str], dict[str, float]]:
     if not path:
         return [], {}
 
+    related_clamps = [c for c in clamps if not c.applies_to or pipe_id in c.applies_to]
     used_clamps: list[str] = []
     min_distance_to_clamps: dict[str, float] = {}
 
-    for clamp in clamps:
+    for clamp in related_clamps:
         min_d = min(point_distance(pt, clamp.position) for pt in path)
         min_distance_to_clamps[clamp.id] = min_d
         if min_d <= clamp.radius:
             used_clamps.append(clamp.id)
 
     return used_clamps, min_distance_to_clamps
+
+
+def _pipe_own_clamps(clamps: list[ClampCandidate], pipe_id: str) -> list[ClampCandidate]:
+    return [c for c in clamps if not c.applies_to or pipe_id in c.applies_to]
+
+
+def _clamp_hit_points(path: list[tuple[float, float, float]], clamps: list[ClampCandidate]) -> list[tuple[float, float, float]]:
+    hits: list[tuple[float, float, float]] = []
+    if not path:
+        return hits
+    for clamp in clamps:
+        best_p: tuple[float, float, float] | None = None
+        best_d = float("inf")
+        for p in path:
+            d = point_distance(p, clamp.position)
+            if d <= clamp.radius and d < best_d:
+                best_d = d
+                best_p = p
+        if best_p is not None:
+            hits.append(best_p)
+    return hits
 
 
 def _path_is_collision_free(
@@ -108,9 +132,34 @@ def _update_pipe_metrics(pipe_result: dict, clamps: list[ClampCandidate], pipe_s
     pipe_result["min_bend_radius_ok"] = bend_check["min_bend_radius_ok"]
     pipe_result["bend_radius_violation_count"] = bend_check["bend_radius_violation_count"]
     pipe_result["bend_radius_violations"] = bend_check["bend_radius_violations"]
-    used_clamps, min_distance_to_clamps = _compute_clamp_metrics(path, clamps)
+    own_clamps = _pipe_own_clamps(clamps, pipe_spec.id)
+    used_clamps, min_distance_to_clamps = _compute_clamp_metrics(path, clamps, pipe_spec.id)
+    own_ids = [c.id for c in own_clamps]
     pipe_result["used_clamps"] = used_clamps
     pipe_result["min_distance_to_clamps"] = min_distance_to_clamps
+    pipe_result["own_clamps"] = own_ids
+    pipe_result["missed_clamps"] = [cid for cid in own_ids if cid not in used_clamps]
+
+
+def _evaluate_path_variant(
+    path: list[tuple[float, float, float]],
+    pipe: Pipe,
+    previous_results: list[dict],
+    pipe_by_id: dict[str, Pipe],
+    clamps: list[ClampCandidate],
+) -> tuple[int, int, int, int, float]:
+    bend_info = summarize_bend_rules(path, pipe.min_bend_radius)
+    violations = int(bend_info["bend_rule_violation_count"])
+    conflicts = _count_conflicts_with_previous(pipe.id, path, previous_results, pipe_by_id)
+    used_clamps, _ = _compute_clamp_metrics(path, clamps, pipe.id)
+    # priority: bend violations -> conflicts -> bend_count -> clamp usage -> length
+    return (
+        violations,
+        conflicts,
+        bend_count(path),
+        -len(used_clamps),
+        path_length(path),
+    )
 
 
 def _select_global_paths(results: list[dict], pipe_by_id: dict[str, Pipe], clamps: list[ClampCandidate]) -> list[dict]:
@@ -177,17 +226,107 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
     for pipe in case.pipes:
         inflate_dist = _inflate_distance(pipe)
         inflated_obstacles = [inflate_obstacle(obs, inflate_dist) for obs in case.obstacles]
-        clamp_candidates = [(c.position, c.radius) for c in case.clamp_candidates]
-        ares = astar_route(
-            grid=grid,
-            start_world=pipe.start,
-            end_world=pipe.end,
-            inflated_obstacles=inflated_obstacles,
-            dynamic_blocks=dynamic_blocks,
-            clamp_candidates=clamp_candidates,
-            clamp_reward_weight=0.0,
-        )
-        if not ares.success:
+        own_clamps = _pipe_own_clamps(case.clamp_candidates, pipe.id)
+        clamp_candidates = [(c.position, c.radius) for c in own_clamps]
+        attempts = [
+            {
+                "name": "default_clamp_guided",
+                "clamp_reward_weight": 12.0,
+                "turn_penalty": 0.8,
+                "bend_smoothness_penalty": 1.4,
+                "bend_radius_penalty": 1.2,
+                "length_weight": 0.15,
+            },
+            {
+                "name": "reduced_clamp",
+                "clamp_reward_weight": 4.0,
+                "turn_penalty": 0.95,
+                "bend_smoothness_penalty": 1.6,
+                "bend_radius_penalty": 1.5,
+                "length_weight": 0.15,
+            },
+            {
+                "name": "no_clamp_bend_safe",
+                "clamp_reward_weight": 0.0,
+                "turn_penalty": 1.1,
+                "bend_smoothness_penalty": 2.0,
+                "bend_radius_penalty": 1.9,
+                "length_weight": 0.12,
+            },
+        ]
+
+        best_choice: dict | None = None
+        last_error: str | None = None
+        for att in attempts:
+            ares = astar_route(
+                grid=grid,
+                start_world=pipe.start,
+                end_world=pipe.end,
+                inflated_obstacles=inflated_obstacles,
+                dynamic_blocks=dynamic_blocks,
+                clamp_candidates=clamp_candidates,
+                clamp_reward_weight=att["clamp_reward_weight"],
+                turn_penalty=att["turn_penalty"],
+                bend_smoothness_penalty=att["bend_smoothness_penalty"],
+                bend_radius_penalty=att["bend_radius_penalty"],
+                length_weight=att["length_weight"],
+            )
+            if not ares.success:
+                last_error = ares.error
+                continue
+
+            raw_path = ares.path[:]
+            protected_points = _clamp_hit_points(raw_path, own_clamps)
+            path_smoothed_protected = smooth_path(
+                grid=grid,
+                path=ares.path,
+                inflated_obstacles=inflated_obstacles,
+                dynamic_blocks=dynamic_blocks,
+                protected_points=protected_points,
+            )
+            path_smoothed_plain = smooth_path(
+                grid=grid,
+                path=ares.path,
+                inflated_obstacles=inflated_obstacles,
+                dynamic_blocks=dynamic_blocks,
+                protected_points=[],
+            )
+
+            variants = [
+                ("raw", raw_path),
+                ("smoothed_protected", path_smoothed_protected),
+                ("smoothed_plain", path_smoothed_plain),
+            ]
+            local_best_label = "raw"
+            local_best_path = raw_path
+            local_best_score = _evaluate_path_variant(raw_path, pipe, results, pipe_by_id, case.clamp_candidates)
+            for label, cand in variants[1:]:
+                if not cand:
+                    continue
+                if not _path_is_collision_free(grid, cand, inflated_obstacles, dynamic_blocks):
+                    continue
+                score = _evaluate_path_variant(cand, pipe, results, pipe_by_id, case.clamp_candidates)
+                if score < local_best_score:
+                    local_best_score = score
+                    local_best_path = cand
+                    local_best_label = label
+
+            candidate_choice = {
+                "attempt_name": att["name"],
+                "raw_path": raw_path,
+                "smoothed_path": path_smoothed_protected,
+                "final_path": local_best_path,
+                "final_label": local_best_label,
+                "score": local_best_score,
+            }
+            if best_choice is None or candidate_choice["score"] < best_choice["score"]:
+                best_choice = candidate_choice
+
+            # Early stop when bend violations are eliminated.
+            if local_best_score[0] == 0:
+                break
+
+        if best_choice is None:
             results.append(
                 {
                     "id": pipe.id,
@@ -204,6 +343,8 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
                     "smoothing_revert_reason": None,
                     "used_clamps": [],
                     "min_distance_to_clamps": {},
+                    "own_clamps": [c.id for c in own_clamps],
+                    "missed_clamps": [c.id for c in own_clamps],
                     "min_bend_radius_ok": True,
                     "bend_radius_violation_count": 0,
                     "bend_radius_violations": [],
@@ -211,50 +352,38 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
                     "min_bend_radius_observed": float("inf"),
                     "bend_rule_violation_count": 0,
                     "bend_rule_violations": [],
-                    "error": ares.error,
+                    "error": last_error or "No path found.",
                     "local_reroute_applied": False,
                     "local_reroute_reason": None,
                     "rerouted": False,
                     "reroute_reason": None,
                     "affected_by_changed_region": False,
+                    "cbs_fallback_applied": False,
+                    "cbs_fallback_reason": None,
+                    "cbs_rerouted": False,
+                    "cbs_constraints_count": 0,
+                    "cbs_reroute_reason": None,
                 }
             )
             continue
 
-        raw_path = ares.path[:]
-        path_smoothed = smooth_path(
-            grid=grid,
-            path=ares.path,
-            inflated_obstacles=inflated_obstacles,
-            dynamic_blocks=dynamic_blocks,
-        )
-
-        smoothing_applied = path_smoothed != raw_path
+        raw_path = best_choice["raw_path"]
+        path_smoothed_protected = best_choice["smoothed_path"]
+        best_path = best_choice["final_path"]
+        best_label = best_choice["final_label"]
+        smoothing_applied = best_label != "raw"
         smoothing_reverted = False
         smoothing_revert_reason = None
-        final_path = path_smoothed
-
-        if not path_smoothed:
-            smoothing_reverted = smoothing_applied
-            smoothing_revert_reason = "smoothed_path_empty"
-            final_path = raw_path
-        elif not _path_is_collision_free(grid, path_smoothed, inflated_obstacles, dynamic_blocks):
-            smoothing_reverted = smoothing_applied
-            smoothing_revert_reason = "smoothed_path_hits_obstacle"
-            final_path = raw_path
-        else:
-            raw_conflicts = _count_conflicts_with_previous(pipe.id, raw_path, results, pipe_by_id)
-            smooth_conflicts = _count_conflicts_with_previous(pipe.id, path_smoothed, results, pipe_by_id)
-            if smooth_conflicts > raw_conflicts:
-                smoothing_reverted = smoothing_applied
-                smoothing_revert_reason = "smoothed_path_increases_conflicts"
-                final_path = raw_path
+        final_path = best_path
+        if best_label == "raw" and path_smoothed_protected != raw_path and path_smoothed_plain != raw_path:
+            smoothing_reverted = True
+            smoothing_revert_reason = "smoothing_not_better_under_bend_priority"
 
         result = {
             "id": pipe.id,
             "success": True,
             "raw_path": [list(p) for p in raw_path],
-            "smoothed_path": [list(p) for p in path_smoothed],
+            "smoothed_path": [list(p) for p in path_smoothed_protected],
             "path": [list(p) for p in final_path],
             "length": 0.0,
             "bend_count": 0,
@@ -265,6 +394,8 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
             "smoothing_revert_reason": smoothing_revert_reason,
             "used_clamps": [],
             "min_distance_to_clamps": {},
+            "own_clamps": [c.id for c in own_clamps],
+            "missed_clamps": [],
             "min_bend_radius_ok": True,
             "bend_radius_violation_count": 0,
             "bend_radius_violations": [],
@@ -278,6 +409,11 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
             "rerouted": False,
             "reroute_reason": None,
             "affected_by_changed_region": False,
+            "cbs_fallback_applied": False,
+            "cbs_fallback_reason": None,
+            "cbs_rerouted": False,
+            "cbs_constraints_count": 0,
+            "cbs_reroute_reason": None,
         }
         _update_pipe_metrics(result, case.clamp_candidates, pipe)
         results.append(result)
@@ -285,6 +421,15 @@ def route_pipes_sequentially(case: RoutingCase) -> dict:
 
     conflicts = _select_global_paths(results, pipe_by_id, case.clamp_candidates)
     conflicts = _apply_local_reroute(case, grid, results, pipe_by_id, conflicts)
+    conflicts = apply_simplified_cbs_fallback(
+        case=case,
+        grid=grid,
+        results=results,
+        pipe_by_id=pipe_by_id,
+        conflicts=conflicts,
+        update_metrics=_update_pipe_metrics,
+        max_iterations=3,
+    )
 
     for item in results:
         item["conflicts"] = []

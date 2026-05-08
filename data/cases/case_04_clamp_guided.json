@@ -1,0 +1,75 @@
+{
+  "workspace": {
+    "min": [
+      0,
+      0,
+      0
+    ],
+    "max": [
+      1000,
+      800,
+      600
+    ],
+    "resolution": 20
+  },
+  "obstacles": [
+    {
+      "id": "center",
+      "type": "box",
+      "min": [
+        420,
+        280,
+        120
+      ],
+      "max": [
+        560,
+        480,
+        300
+      ]
+    }
+  ],
+  "pipes": [
+    {
+      "id": "pipe_1",
+      "start": [
+        80,
+        120,
+        120
+      ],
+      "end": [
+        900,
+        620,
+        280
+      ],
+      "diameter": 16,
+      "clearance": 10,
+      "min_bend_radius": 50
+    }
+  ],
+  "clamp_candidates": [
+    {
+      "id": "clamp_1",
+      "position": [
+        280,
+        180,
+        180
+      ],
+      "radius": 120,
+      "applies_to": [
+        "pipe_1"
+      ]
+    },
+    {
+      "id": "clamp_2",
+      "position": [
+        700,
+        520,
+        260
+      ],
+      "radius": 120,
+      "applies_to": [
+        "pipe_1"
+      ]
+    }
+  ]
+}

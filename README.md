@@ -1,50 +1,50 @@
-ï»¿# PipeRouting MVP
+# PipeRouting MVP
 
-## 1. é¡¹ç›®ç›®æ ‡
-å®ç°æ±½è½¦å‰èˆ±ç®¡è·¯è‡ªåŠ¨å¸ƒç½® MVPï¼ˆç®—æ³•åŸå‹ï¼‰ã€‚
+## 1. ÏîÄ¿Ä¿±ê
+ÊµÏÖÆû³µÇ°²Õ¹ÜÂ·×Ô¶¯²¼ÖÃ MVP£¨Ëã·¨Ô­ĞÍ£©¡£
 
-## 2. å½“å‰ MVP åŠŸèƒ½
-- JSON è¾“å…¥ï¼ˆ`data/demo_case.json`ï¼‰
+## 2. µ±Ç° MVP ¹¦ÄÜ
+- JSON ÊäÈë£¨`data/demo_case.json`£©
 - 3D grid
-- box éšœç¢ç‰©ä¸è†¨èƒ€
-- å•ç®¡ 3D A*
-- å¤šç®¡é¡ºåºè§„åˆ’
-- å·²è§„åˆ’ç®¡è·¯åŠ¨æ€éšœç¢ç‰©
-- ç®¡-ç®¡å†²çªæ£€æµ‹
-- `outputs/result.json` è¾“å‡º
-- Plotly ç”Ÿæˆ `outputs/result.html`
-- Markdown æŠ¥å‘Š `outputs/routing_report.md`
-- pytest åŸºç¡€æµ‹è¯•
+- box ÕÏ°­ÎïÓëÅòÕÍ
+- µ¥¹Ü 3D A*
+- ¶à¹ÜË³Ğò¹æ»®
+- ÒÑ¹æ»®¹ÜÂ·¶¯Ì¬ÕÏ°­Îï
+- ¹Ü-¹Ü³åÍ»¼ì²â
+- `outputs/result.json` Êä³ö
+- Plotly Éú³É `outputs/result.html`
+- Markdown ±¨¸æ `outputs/routing_report.md`
+- pytest »ù´¡²âÊÔ
 
-## 3. Windows + conda ç¯å¢ƒ
+## 3. Windows + conda »·¾³
 ```bash
 conda create -n pipe-routing python=3.10 -y
 conda activate pipe-routing
 ```
 
-## 4. å®‰è£…ä¾èµ–
+## 4. °²×°ÒÀÀµ
 ```bash
 pip install -r requirements.txt
 ```
 
-## 5. è¿è¡Œ demo
+## 5. ÔËĞĞ demo
 ```bash
 python run_demo.py
 ```
 
-## 6. è¿è¡Œæµ‹è¯•
+## 6. ÔËĞĞ²âÊÔ
 ```bash
 pytest -q
 ```
 
-## 7. è¾“å…¥ JSON å­—æ®µè¯´æ˜
+## 7. ÊäÈë JSON ×Ö¶ÎËµÃ÷
 - `workspace`: `min` / `max` / `resolution`
-- `obstacles`: ä»…æ”¯æŒ `type=box`ï¼ŒåŒ…å« `min` / `max`
+- `obstacles`: ½öÖ§³Ö `type=box`£¬°üº¬ `min` / `max`
 - `pipes`: `start` / `end` / `diameter` / `clearance` / `min_bend_radius`
 - `clamp_candidates`: `position` / `radius`
 
-## 8. result.json å­—æ®µè¯´æ˜
-æ¯æ ¹ç®¡è·¯åŒ…å«ï¼š
+## 8. result.json ×Ö¶ÎËµÃ÷
+Ã¿¸ù¹ÜÂ·°üº¬£º
 - `id`
 - `success`
 - `path`
@@ -52,55 +52,97 @@ pytest -q
 - `bend_count`
 - `conflict_count`
 - `conflicts`
-- `used_clamps`: è·¯å¾„è¿›å…¥ clamp åŠå¾„èŒƒå›´çš„ clamp id åˆ—è¡¨
-- `min_distance_to_clamps`: ç®¡è·¯åˆ°æ¯ä¸ª clamp çš„æœ€è¿‘è·ç¦»ï¼ˆå­—å…¸ï¼Œkey ä¸º clamp idï¼‰
-- `raw_path`: A* åŸå§‹è·¯å¾„
-- `smoothed_path`: å¹³æ»‘åçš„å€™é€‰è·¯å¾„
-- `smoothing_applied` / `smoothing_reverted` / `smoothing_revert_reason`: å¹³æ»‘æ˜¯å¦ç”Ÿæ•ˆã€æ˜¯å¦å›é€€åŠåŸå› 
-- `error`ï¼ˆå¤±è´¥æ—¶ï¼‰
+- `used_clamps`: Â·¾¶½øÈë clamp °ë¾¶·¶Î§µÄ clamp id ÁĞ±í
+- `min_distance_to_clamps`: ¹ÜÂ·µ½Ã¿¸ö clamp µÄ×î½ü¾àÀë£¨×Öµä£¬key Îª clamp id£©
+- `raw_path`: A* Ô­Ê¼Â·¾¶
+- `smoothed_path`: Æ½»¬ºóµÄºòÑ¡Â·¾¶
+- `smoothing_applied` / `smoothing_reverted` / `smoothing_revert_reason`: Æ½»¬ÊÇ·ñÉúĞ§¡¢ÊÇ·ñ»ØÍË¼°Ô­Òò
+- `error`£¨Ê§°ÜÊ±£©
 
-æ•´ä½“è¿˜åŒ…å«ï¼š
-- `conflicts`: å…¨å±€å†²çªåˆ—è¡¨
+ÕûÌå»¹°üº¬£º
+- `conflicts`: È«¾Ö³åÍ»ÁĞ±í
 
-## 9. routing_report.md è¯´æ˜
-`outputs/routing_report.md` ç”± `run_demo.py` è‡ªåŠ¨ç”Ÿæˆï¼ŒåŒ…å«ï¼š
+## 9. routing_report.md ËµÃ÷
+`outputs/routing_report.md` ÓÉ `run_demo.py` ×Ô¶¯Éú³É£¬°üº¬£º
 - Summary: `total_pipes` / `success_count` / `failed_count` / `total_length` / `total_conflicts`
-- æ¯æ ¹ pipe: `success` / `length` / `bend_count` / `conflict_count` / `used_clamps` / `min_distance_to_clamps` / `error`ï¼ˆå¤±è´¥æ—¶ï¼‰
-- æ¯æ ¹ pipe è¿˜åŒ…å«å¹³æ»‘ä¿¡æ¯ï¼š`smoothing_applied` / `smoothing_reverted` / `smoothing_revert_reason` / `raw_point_count` / `smoothed_point_count`
-- å¼¯æ›²è§„åˆ™å­—æ®µï¼š`min_bend_radius_required` / `min_bend_radius_observed` / `bend_rule_violation_count` / `bend_rule_violations`
+- Ã¿¸ù pipe: `success` / `length` / `bend_count` / `conflict_count` / `used_clamps` / `min_distance_to_clamps` / `error`£¨Ê§°ÜÊ±£©
+- Ã¿¸ù pipe »¹°üº¬Æ½»¬ĞÅÏ¢£º`smoothing_applied` / `smoothing_reverted` / `smoothing_revert_reason` / `raw_point_count` / `smoothed_point_count`
+- ÍäÇú¹æÔò×Ö¶Î£º`min_bend_radius_required` / `min_bend_radius_observed` / `bend_rule_violation_count` / `bend_rule_violations`
 
-## 12. æœ€å°å¼¯æ›²åŠå¾„æ£€æŸ¥è¯´æ˜
-- å½“å‰å®ç°åŸºäºè·¯å¾„è¿ç»­ä¸‰ç‚¹çš„å‡ ä½•ä¼°ç®—ï¼ˆå¤–æ¥åœ†åŠå¾„ï¼‰ã€‚
-- è¿™æ˜¯ MVP çº§åˆ¶é€ è§„åˆ™æ£€æŸ¥ï¼Œä¸ç­‰ä»·äºçœŸå®å¼¯ç®¡å·¥è‰ºä»¿çœŸã€‚
-- åç»­å¯æ›¿æ¢ä¸ºæ›´ä¸¥æ ¼çš„æ›²çº¿/æ ·æ¡æ›²ç‡è¿ç»­æ£€æŸ¥ã€‚
+## 12. ×îĞ¡ÍäÇú°ë¾¶¼ì²éËµÃ÷
+- µ±Ç°ÊµÏÖ»ùÓÚÂ·¾¶Á¬ĞøÈıµãµÄ¼¸ºÎ¹ÀËã£¨Íâ½ÓÔ²°ë¾¶£©¡£
+- ÕâÊÇ MVP ¼¶ÖÆÔì¹æÔò¼ì²é£¬²»µÈ¼ÛÓÚÕæÊµÍä¹Ü¹¤ÒÕ·ÂÕæ¡£
+- ºóĞø¿ÉÌæ»»Îª¸üÑÏ¸ñµÄÇúÏß/ÑùÌõÇúÂÊÁ¬Ğø¼ì²é¡£
 
-## 13. å±€éƒ¨é‡ç®—ï¼ˆMVPï¼‰
-- å½“å‰æä¾› MVP çº§ local rerouteï¼Œå…¥å£åœ¨ `pipe_routing/local_reroute.py`ã€‚
-- `changed_region` ç¬¬ä¸€ç‰ˆåªæ”¯æŒ `type=box`ã€‚
-- æœªå—å½±å“ç®¡è·¯ä¿æŒåŸè·¯å¾„ä¸å˜ï¼Œå¹¶ä½œä¸ºåŠ¨æ€éšœç¢ç‰©å‚ä¸å—å½±å“ç®¡è·¯é‡ç®—ã€‚
-- å—å½±å“ç®¡è·¯é‡æ–°è¿è¡Œå¯»è·¯ã€å¹³æ»‘ä¸è§„åˆ™æ£€æŸ¥ã€‚
+## 13. ¾Ö²¿ÖØËã£¨MVP£©
+- µ±Ç°Ìá¹© MVP ¼¶ local reroute£¬Èë¿ÚÔÚ `pipe_routing/local_reroute.py`¡£
+- `changed_region` µÚÒ»°æÖ»Ö§³Ö `type=box`¡£
+- Î´ÊÜÓ°Ïì¹ÜÂ·±£³ÖÔ­Â·¾¶²»±ä£¬²¢×÷Îª¶¯Ì¬ÕÏ°­Îï²ÎÓëÊÜÓ°Ïì¹ÜÂ·ÖØËã¡£
+- ÊÜÓ°Ïì¹ÜÂ·ÖØĞÂÔËĞĞÑ°Â·¡¢Æ½»¬Óë¹æÔò¼ì²é¡£
 
-## 14. 3D å¯è§†åŒ–è¯´æ˜
-- `result.html` ä¸­ç®¡è·¯æŒ‰ `pipe.diameter` æ¸²æŸ“ä¸ºè¿‘ä¼¼ tubeï¼ˆåˆ†æ®µåœ†æŸ± meshï¼‰ã€‚
-- tube æ˜¯å¯è§†åŒ–è¿‘ä¼¼ï¼Œä¸ç­‰äºçœŸå® CAD ç®¡è·¯å®ä½“ã€‚
-- é»˜è®¤ä½¿ç”¨ç¨³å®šçš„è¿ç»­ tube å¯è§†åŒ–ï¼ˆä¸å¼ºåˆ¶åœ†è§’å¼¯å¤´ï¼‰ã€‚
-- rounded elbow æ˜¯å®éªŒæ€§å¯é€‰åŠŸèƒ½ï¼Œé»˜è®¤å…³é—­ã€‚
-- å½“å‰é˜¶æ®µä¸è¿½æ±‚ CAD çº§åœ†è§’å¼¯å¤´ã€‚
+## 15. Simplified CBS£¨MVP£©
+- µ×²ãµ¥¹ÜÑ°Â·Æ÷ÈÔÊÇ 3D A*¡£
+- simplified CBS ÊÇÉÏ²ã³åÍ»»ØÍËĞ­µ÷Æ÷£º¼ì²â×îÖÕ³åÍ»ºó£¬Éú³É box Ô¼Êø²¢³¢ÊÔ¶Ô³åÍ»¹ÜÂ·»ØÍËÖØËã¡£
+- µ±Ç°Îª MVP£¬²»ÊÇÍêÕû CBS ËÑË÷Ê÷ÊµÏÖ¡£
+- ¾ßÓĞ `max_iterations` µü´úÉÏÏŞ£¬±ÜÃâËÀÑ­»·¡£
+- ³åÍ»Ô¼ÊøÄ¿Ç°Ê¹ÓÃ box ½üËÆ¡£
 
-## 10. å½“å‰é™åˆ¶
-- ä»… JSON è¾“å…¥
-- ä»… box éšœç¢ç‰©
-- ä¸æ¥ CATIA / STP / STEP / OBJ / STL
-- ä¸åš GUIã€Webã€æ•°æ®åº“ã€ROS
+## 16. ¶à³¡¾° Case ÅúÁ¿ÔËĞĞ
+- Ä¿Â¼£º`data/cases/`
+- ½Å±¾£º`python run_cases.py`
+- Êä³ö£º`outputs/cases/<case_name>/result.json`¡¢`result.html`¡¢`routing_report.md`
+- »ã×Ü£º`outputs/cases/summary.csv`
 
-## 11. åç»­æ‰©å±•æ–¹å‘
-1. å›ºå®šç‚¹å¥–åŠ±å¢å¼ºå’Œå¼ºåˆ¶ waypoint
-2. æ›´ä¸¥æ ¼å¼¯æ›²åŠå¾„
-3. è·¯å¾„å¹³æ»‘
-4. å±€éƒ¨é‡ç®—
-5. ç®€åŒ– CBS å›é€€é‡ç®—
+µ±Ç°ÄÚÖÃ³¡¾°£º
+1. `case_01_simple_clear`: ÎŞÕÏ°­»ù´¡¿É´ïĞÔ
+2. `case_02_obstacle_detour`: µ¥ÕÏ°­ÈÆĞĞ
+3. `case_03_multi_pipe_conflict`: ¶à¹Ü½üÁÚ³åÍ»Ñ¹Á¦
+4. `case_04_clamp_guided`: º¬ clamp ºòÑ¡µãµÄÂ·¾¶ÖÊÁ¿¹Û²ì
+5. `case_05_local_reroute`: ÊÊºÏ¾Ö²¿ÖØËãÑİÊ¾
+6. `case_06_dense_obstacles`: ÃÜ¼¯ÕÏ°­¸´ÔÓÂ·¾¶
+7. `case_07_no_solution`: ÎŞ½â³¡¾°£¨ÓÃÓÚÊ§°Ü´¦ÀíÑéÖ¤£©
 
-æ‰“å¼€å¯è§†åŒ–ï¼š
+## 14. 3D ¿ÉÊÓ»¯ËµÃ÷
+- `result.html` ÖĞ¹ÜÂ·°´ `pipe.diameter` äÖÈ¾Îª½üËÆ tube£¨·Ö¶ÎÔ²Öù mesh£©¡£
+- tube ÊÇ¿ÉÊÓ»¯½üËÆ£¬²»µÈÓÚÕæÊµ CAD ¹ÜÂ·ÊµÌå¡£
+- Ä¬ÈÏÊ¹ÓÃÎÈ¶¨µÄÁ¬Ğø tube ¿ÉÊÓ»¯£¨²»Ç¿ÖÆÔ²½ÇÍäÍ·£©¡£
+- rounded elbow ÊÇÊµÑéĞÔ¿ÉÑ¡¹¦ÄÜ£¬Ä¬ÈÏ¹Ø±Õ¡£
+- µ±Ç°½×¶Î²»×·Çó CAD ¼¶Ô²½ÇÍäÍ·¡£
+
+## 10. µ±Ç°ÏŞÖÆ
+- ½ö JSON ÊäÈë
+- ½ö box ÕÏ°­Îï
+- ²»½Ó CATIA / STP / STEP / OBJ / STL
+- ²»×ö GUI¡¢Web¡¢Êı¾İ¿â¡¢ROS
+
+## 11. ºóĞøÀ©Õ¹·½Ïò
+1. ¹Ì¶¨µã½±ÀøÔöÇ¿ºÍÇ¿ÖÆ waypoint
+2. ¸üÑÏ¸ñÍäÇú°ë¾¶
+3. Â·¾¶Æ½»¬
+4. ¾Ö²¿ÖØËã
+5. ¼ò»¯ CBS »ØÍËÖØËã
+
+´ò¿ª¿ÉÊÓ»¯£º
 ```powershell
 start outputs\result.html
 ```
+
+## Optimization Priority (Current Phase)
+1. Feasible path first
+2. Obstacle avoidance and pipe-pipe conflict minimization
+3. Bend radius compliance and smoothness
+4. Clamp guidance as soft preference
+5. Path length as reference only (weak objective)
+
+## Pipe-specific Clamp Candidates
+- `clamp_candidates` are soft constraints, not mandatory waypoints.
+- `applies_to` lists which pipe ids a clamp belongs to.
+- During routing, each pipe only receives clamp reward from its own clamps (`applies_to` contains that pipe), or global clamps when `applies_to` is missing/empty.
+- If clamp passing would violate obstacle/conflict safety, planner may skip it.
+- `required_clamps` is a future hard-constraint extension and is not implemented in current phase.
+
+### Case Output Naming
+- Recommended files are prefixed by case name: outputs/cases/<case_name>/<case_name>_result.json, <case_name>_result.html, <case_name>_routing_report.md.
+- Legacy esult.json, esult.html, outing_report.md are still generated as compatibility copies in the same case folder.
+- outputs/cases/summary.csv includes esult_json_path, esult_html_path, outing_report_path pointing to prefixed files.
+

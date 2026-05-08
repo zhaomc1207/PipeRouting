@@ -22,10 +22,26 @@ def test_run_demo_generates_routing_report() -> None:
     assert "min_bend_radius_required" in text
     assert "min_bend_radius_observed" in text
     assert "bend_rule_violation_count" in text
+    assert "cbs_enabled" in text
+    assert "cbs_iterations" in text
+    assert "cbs_resolved_conflicts" in text
+    assert "cbs_remaining_conflicts" in text
+    assert "own_clamps" in text
+    assert "missed_clamps" in text
 
     result = json.loads(Path("outputs/result.json").read_text(encoding="utf-8"))
+    assert "cbs_enabled" in result
+    assert "cbs_iterations" in result
+    assert "cbs_resolved_conflicts" in result
+    assert "cbs_remaining_conflicts" in result
+    assert "cbs_log" in result
+    assert "clamp_usage" in result
     for pipe in result["pipes"]:
         assert "min_bend_radius_required" in pipe
         assert "min_bend_radius_observed" in pipe
         assert "bend_rule_violation_count" in pipe
         assert "bend_rule_violations" in pipe
+        assert "cbs_rerouted" in pipe
+        assert "cbs_constraints_count" in pipe
+        assert "cbs_reroute_reason" in pipe
+        assert "used_clamps" in pipe

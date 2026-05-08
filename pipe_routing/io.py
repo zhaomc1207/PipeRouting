@@ -39,6 +39,7 @@ class ClampCandidate:
     id: str
     position: Vec3
     radius: float
+    applies_to: list[str] | None = None
 
 
 @dataclass(frozen=True)
@@ -144,11 +145,17 @@ def _parse_clamps(payload: Any) -> list[ClampCandidate]:
         radius = float(item["radius"])
         if radius < 0:
             raise ValueError(f"clamp_candidates[{idx}].radius must be >= 0.")
+        applies_to = item.get("applies_to")
+        if applies_to is not None:
+            if not isinstance(applies_to, list) or any(not isinstance(x, str) for x in applies_to):
+                raise ValueError(f"clamp_candidates[{idx}].applies_to must be a list of pipe ids.")
+            applies_to = [str(x) for x in applies_to]
         clamps.append(
             ClampCandidate(
                 id=str(item["id"]),
                 position=_to_vec3(item["position"], f"clamp_candidates[{idx}].position"),
                 radius=radius,
+                applies_to=applies_to,
             )
         )
     return clamps

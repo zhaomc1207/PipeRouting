@@ -1,0 +1,161 @@
+{
+  "workspace": {
+    "min": [
+      0,
+      0,
+      0
+    ],
+    "max": [
+      1000,
+      800,
+      600
+    ],
+    "resolution": 20
+  },
+  "obstacles": [
+    {
+      "id": "o1",
+      "type": "box",
+      "min": [
+        180,
+        180,
+        80
+      ],
+      "max": [
+        320,
+        360,
+        260
+      ]
+    },
+    {
+      "id": "o2",
+      "type": "box",
+      "min": [
+        360,
+        120,
+        100
+      ],
+      "max": [
+        520,
+        300,
+        280
+      ]
+    },
+    {
+      "id": "o3",
+      "type": "box",
+      "min": [
+        520,
+        320,
+        120
+      ],
+      "max": [
+        700,
+        520,
+        320
+      ]
+    },
+    {
+      "id": "o4",
+      "type": "box",
+      "min": [
+        700,
+        180,
+        140
+      ],
+      "max": [
+        860,
+        360,
+        340
+      ]
+    }
+  ],
+  "pipes": [
+    {
+      "id": "pipe_1",
+      "start": [
+        60,
+        100,
+        120
+      ],
+      "end": [
+        920,
+        680,
+        320
+      ],
+      "diameter": 18,
+      "clearance": 12,
+      "min_bend_radius": 50
+    },
+    {
+      "id": "pipe_2",
+      "start": [
+        80,
+        200,
+        120
+      ],
+      "end": [
+        900,
+        620,
+        280
+      ],
+      "diameter": 16,
+      "clearance": 12,
+      "min_bend_radius": 50
+    },
+    {
+      "id": "pipe_3",
+      "start": [
+        100,
+        260,
+        120
+      ],
+      "end": [
+        880,
+        560,
+        260
+      ],
+      "diameter": 14,
+      "clearance": 10,
+      "min_bend_radius": 40
+    }
+  ],
+  "clamp_candidates": [
+    {
+      "id": "clamp_pipe_1_1",
+      "position": [
+        490.0,
+        390.0,
+        220.0
+      ],
+      "radius": 80,
+      "applies_to": [
+        "pipe_1"
+      ]
+    },
+    {
+      "id": "clamp_pipe_2_1",
+      "position": [
+        490.0,
+        410.0,
+        200.0
+      ],
+      "radius": 80,
+      "applies_to": [
+        "pipe_2"
+      ]
+    },
+    {
+      "id": "clamp_pipe_3_1",
+      "position": [
+        490.0,
+        410.0,
+        190.0
+      ],
+      "radius": 80,
+      "applies_to": [
+        "pipe_3"
+      ]
+    }
+  ]
+}

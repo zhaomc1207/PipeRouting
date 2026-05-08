@@ -44,27 +44,56 @@ def smooth_path(
     path: list[Vec3],
     inflated_obstacles: list[Obstacle],
     dynamic_blocks: set[GridIndex] | None = None,
+    protected_points: list[Vec3] | None = None,
+    protected_tol: float = 1e-6,
 ) -> list[Vec3]:
     """Shortcut path while preserving obstacle safety."""
     if len(path) <= 2:
         return path[:]
 
-    smoothed: list[Vec3] = [path[0]]
-    anchor = 0
-    while anchor < len(path) - 1:
-        farthest = anchor + 1
-        for j in range(len(path) - 1, anchor, -1):
-            if _can_connect_directly(
-                grid=grid,
-                a=path[anchor],
-                b=path[j],
-                inflated_obstacles=inflated_obstacles,
-                dynamic_blocks=dynamic_blocks,
-            ):
-                farthest = j
-                break
-        smoothed.append(path[farthest])
-        anchor = farthest
+    def _same_point(a: Vec3, b: Vec3, tol: float) -> bool:
+        return (
+            abs(a[0] - b[0]) <= tol
+            and abs(a[1] - b[1]) <= tol
+            and abs(a[2] - b[2]) <= tol
+        )
+
+    def _smooth_subpath(subpath: list[Vec3]) -> list[Vec3]:
+        if len(subpath) <= 2:
+            return subpath[:]
+        out: list[Vec3] = [subpath[0]]
+        anchor = 0
+        while anchor < len(subpath) - 1:
+            farthest = anchor + 1
+            for j in range(len(subpath) - 1, anchor, -1):
+                if _can_connect_directly(
+                    grid=grid,
+                    a=subpath[anchor],
+                    b=subpath[j],
+                    inflated_obstacles=inflated_obstacles,
+                    dynamic_blocks=dynamic_blocks,
+                ):
+                    farthest = j
+                    break
+            out.append(subpath[farthest])
+            anchor = farthest
+        return out
+
+    protected_indices: set[int] = set()
+    if protected_points:
+        for i, p in enumerate(path):
+            if any(_same_point(p, q, protected_tol) for q in protected_points):
+                protected_indices.add(i)
+
+    mandatory = sorted({0, len(path) - 1, *protected_indices})
+    smoothed: list[Vec3] = []
+    for idx in range(len(mandatory) - 1):
+        s = mandatory[idx]
+        e = mandatory[idx + 1]
+        chunk = _smooth_subpath(path[s : e + 1])
+        if smoothed and chunk and _same_point(smoothed[-1], chunk[0], protected_tol):
+            smoothed.extend(chunk[1:])
+        else:
+            smoothed.extend(chunk)
 
     return smoothed
-

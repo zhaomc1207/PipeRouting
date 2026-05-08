@@ -14,31 +14,17 @@
   },
   "obstacles": [
     {
-      "id": "engine",
+      "id": "mid_block",
       "type": "box",
       "min": [
-        320,
-        260,
+        430,
+        300,
         120
       ],
       "max": [
-        520,
+        570,
         500,
-        380
-      ]
-    },
-    {
-      "id": "battery",
-      "type": "box",
-      "min": [
-        620,
-        120,
-        80
-      ],
-      "max": [
-        780,
-        300,
-        260
+        320
       ]
     }
   ],
@@ -47,84 +33,84 @@
       "id": "pipe_1",
       "start": [
         60,
-        120,
+        100,
         120
       ],
       "end": [
-        920,
+        940,
         620,
-        320
+        300
       ],
-      "diameter": 20,
+      "diameter": 22,
       "clearance": 15,
       "min_bend_radius": 60
     },
     {
       "id": "pipe_2",
       "start": [
-        80,
-        220,
-        100
+        70,
+        120,
+        120
       ],
       "end": [
-        900,
-        700,
-        260
+        930,
+        600,
+        300
       ],
-      "diameter": 18,
+      "diameter": 22,
       "clearance": 15,
-      "min_bend_radius": 50
+      "min_bend_radius": 60
     },
     {
       "id": "pipe_3",
       "start": [
-        120,
         80,
-        80
+        140,
+        120
       ],
       "end": [
-        880,
-        540,
-        420
+        920,
+        580,
+        300
       ],
-      "diameter": 16,
+      "diameter": 18,
       "clearance": 12,
       "min_bend_radius": 50
     }
   ],
   "clamp_candidates": [
     {
-      "id": "clamp_p1_1",
+      "id": "clamp_pipe_1_1",
       "position": [
-        560,
-        320,
-        80
+        500.0,
+        360.0,
+        210.0
       ],
-      "radius": 100,
+      "radius": 80,
       "applies_to": [
         "pipe_1"
       ]
     },
     {
-      "id": "clamp_p2_1",
+      "id": "clamp_pipe_2_1",
       "position": [
-        660,
-        460,
-        60
+        500.0,
+        360.0,
+        210.0
       ],
-      "radius": 90,
+      "radius": 80,
       "applies_to": [
         "pipe_2"
       ]
     },
     {
-      "id": "clamp_p3_1",
+      "id": "clamp_pipe_3_1",
       "position": [
-        720,
-        280,
-        560
+        500.0,
+        360.0,
+        210.0
       ],
-      "radius": 120,
+      "radius": 80,
       "applies_to": [
         "pipe_3"
       ]
