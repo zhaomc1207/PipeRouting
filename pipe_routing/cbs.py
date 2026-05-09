@@ -59,8 +59,8 @@ def _path_turn_count_and_smoothness(path: list[list[float]] | list[tuple[float, 
 
 
 def score_solution(results: list[dict], conflicts: list[dict]) -> tuple[int, int, int, int, float, float]:
-    total_conflicts = len(conflicts)
     failed_pipes = sum(1 for p in results if not p.get("success"))
+    total_conflicts = len(conflicts)
     total_bend_violations = sum(int(p.get("bend_rule_violation_count", 0)) for p in results if p.get("success"))
     total_turn_count = 0
     smoothness_score = 0.0
@@ -73,13 +73,32 @@ def score_solution(results: list[dict], conflicts: list[dict]) -> tuple[int, int
         smoothness_score += smoothness
         total_length += float(p.get("length", 0.0))
     return (
-        total_conflicts,
         failed_pipes,
+        total_conflicts,
         total_bend_violations,
         total_turn_count,
         smoothness_score,
         total_length,
     )
+
+
+def _business_score(results: list[dict], conflicts: list[dict]) -> tuple[int, int, int, int, int, float]:
+    failed_count = sum(1 for p in results if not p.get("success"))
+    total_conflicts = len(conflicts)
+    total_bend_violations = sum(int(p.get("bend_rule_violation_count", 0)) for p in results if p.get("success"))
+    degraded_pipe_count = sum(
+        1
+        for p in results
+        if p.get("success")
+        and (
+            int(p.get("conflict_count", 0)) > 0
+            or int(p.get("bend_rule_violation_count", 0)) > 0
+            or not bool(p.get("min_bend_radius_ok", True))
+        )
+    )
+    total_bend_count = sum(int(p.get("bend_count", 0)) for p in results if p.get("success"))
+    total_length = sum(float(p.get("length", 0.0)) for p in results if p.get("success"))
+    return (failed_count, total_conflicts, total_bend_violations, degraded_pipe_count, total_bend_count, total_length)
 
 
 def _inflate_distance(pipe: Pipe) -> float:
@@ -90,8 +109,10 @@ def _rasterize_path_to_dynamic_blocks(
     grid: Grid3D,
     path: list[tuple[float, float, float]],
     inflate_distance: float,
+    protected_cells: set[GridIndex] | None = None,
 ) -> set[GridIndex]:
     blocks: set[GridIndex] = set()
+    protected = protected_cells or set()
     r = int(round(inflate_distance / grid.resolution))
     for pt in path:
         center = grid.world_to_index(pt)
@@ -99,9 +120,23 @@ def _rasterize_path_to_dynamic_blocks(
             for dy in range(-r, r + 1):
                 for dz in range(-r, r + 1):
                     idx = (center[0] + dx, center[1] + dy, center[2] + dz)
-                    if grid.in_bounds(idx):
+                    if grid.in_bounds(idx) and idx not in protected:
                         blocks.add(idx)
     return blocks
+
+
+def _collect_terminal_allowance_cells(grid: Grid3D, pipes: list[Pipe], radius_cells: int = 1) -> set[GridIndex]:
+    cells: set[GridIndex] = set()
+    for p in pipes:
+        for world_pt in (p.start, p.end):
+            c = grid.world_to_index(world_pt)
+            for dx in range(-radius_cells, radius_cells + 1):
+                for dy in range(-radius_cells, radius_cells + 1):
+                    for dz in range(-radius_cells, radius_cells + 1):
+                        idx = (c[0] + dx, c[1] + dy, c[2] + dz)
+                        if grid.in_bounds(idx):
+                            cells.add(idx)
+    return cells
 
 
 def _path_is_collision_free(
@@ -187,18 +222,20 @@ def _reroute_one_pipe_with_constraint(
     pipe_by_id = {p.id: p for p in case.pipes}
     pipe = pipe_by_id[pipe_id]
     grid = Grid3D(case.workspace)
+    terminal_allowance = _collect_terminal_allowance_cells(grid, case.pipes, radius_cells=1)
 
     dynamic_blocks: set[GridIndex] = set()
     for item in results:
         if not item.get("success") or item["id"] == pipe_id:
             continue
         other = pipe_by_id[item["id"]]
-        inflate_distance = (
-            other.diameter / 2.0
-            + pipe.diameter / 2.0
-            + max(other.clearance, pipe.clearance)
+        inflate_distance = other.diameter / 2.0 + pipe.diameter / 2.0 + max(other.clearance, pipe.clearance)
+        dynamic_blocks |= _rasterize_path_to_dynamic_blocks(
+            grid,
+            [tuple(x) for x in item["path"]],
+            inflate_distance,
+            protected_cells=terminal_allowance,
         )
-        dynamic_blocks |= _rasterize_path_to_dynamic_blocks(grid, [tuple(x) for x in item["path"]], inflate_distance)
 
     obstacles = apply_constraints_to_case_or_planner(case, [constraint_box])
     inflated_obstacles = [inflate_obstacle(obs, _inflate_distance(pipe)) for obs in obstacles]
@@ -245,7 +282,7 @@ def _reroute_one_pipe_with_constraint(
     return out
 
 
-def simplified_cbs(case: RoutingCase, initial_results: dict, max_iterations: int = 5, padding: float = 40.0) -> dict:
+def simplified_cbs(case: RoutingCase, initial_results: dict, max_iterations: int = 20, padding: float = 40.0) -> dict:
     results = deepcopy(initial_results["pipes"])
     pipe_by_id = {p.id: p for p in case.pipes}
 
@@ -256,62 +293,141 @@ def simplified_cbs(case: RoutingCase, initial_results: dict, max_iterations: int
 
     conflicts = detect_pipe_conflicts(results, pipe_by_id)
     cbs_log: list[str] = []
+    cbs_attempts = 0
+
+    def _refresh_conflict_counts(conf_list: list[dict]) -> None:
+        for item in results:
+            item["conflict_count"] = sum(1 for c in conf_list if item["id"] in (c["pipe_a"], c["pipe_b"]))
+
+    _refresh_conflict_counts(conflicts)
+    initial_conflicts_count = len(conflicts)
+
     if not conflicts:
         cbs_log.append("No conflicts detected; CBS exits immediately.")
+        for item in results:
+            item["degraded_result"] = False
         return {
             "pipes": results,
             "conflicts": conflicts,
             "cbs_enabled": True,
             "cbs_iterations": 0,
+            "cbs_attempts": 0,
             "cbs_resolved_conflicts": 0,
             "cbs_remaining_conflicts": 0,
+            "cbs_no_improvement_reason": None,
+            "unresolved_conflicts": False,
+            "degraded_pipe_count": 0,
             "cbs_log": cbs_log,
         }
 
-    initial_conflicts_count = len(conflicts)
     iterations = 0
+    no_improvement_reason: str | None = None
     for it in range(max_iterations):
         if not conflicts:
             break
         iterations += 1
         by_id = {p["id"]: p for p in results}
-        conflict = dict(conflicts[0])
-        conflict["conflict_point"] = _compute_conflict_point(conflict, by_id)
-        constraint = make_conflict_constraint(conflict, padding)
+        involvement: dict[str, int] = {}
+        for c in conflicts:
+            involvement[c["pipe_a"]] = involvement.get(c["pipe_a"], 0) + 1
+            involvement[c["pipe_b"]] = involvement.get(c["pipe_b"], 0) + 1
+        prioritized = sorted(
+            conflicts,
+            key=lambda c: (
+                float(c.get("distance", 0.0)),
+                -(float(c.get("required_distance", 0.0)) - float(c.get("distance", 0.0))),
+                -max(involvement.get(c["pipe_a"], 0), involvement.get(c["pipe_b"], 0)),
+                -int(bool(by_id.get(c["pipe_a"], {}).get("degraded_result", False))),
+                -int(bool(by_id.get(c["pipe_b"], {}).get("degraded_result", False))),
+            ),
+        )
+        current_business = _business_score(results, conflicts)
+        current_score = score_solution(results, conflicts)
+        cbs_log.append(f"iter={it+1}: begin conflicts={len(conflicts)} score={current_business}")
 
-        candidates: list[tuple[tuple[int, int, int, int, float, float], list[dict], str]] = []
-        for pid in (conflict["pipe_a"], conflict["pipe_b"]):
-            rerouted = _reroute_one_pipe_with_constraint(case, results, pid, constraint)
-            if rerouted is None:
-                cbs_log.append(f"iter={it+1}: candidate {pid} failed to reroute")
-                continue
-            cand_conflicts = detect_pipe_conflicts(rerouted, pipe_by_id)
-            score = score_solution(rerouted, cand_conflicts)
-            candidates.append((score, rerouted, pid))
-            cbs_log.append(f"iter={it+1}: candidate {pid} score={score}")
+        best_candidate: tuple[tuple[int, int, int, int, float, float], tuple[int, int, int, int, int, float], list[dict], list[dict], str] | None = None
 
-        if not candidates:
-            cbs_log.append(f"iter={it+1}: no feasible candidate, stop.")
+        for cidx, base_conflict in enumerate(prioritized[: min(4, len(prioritized))]):
+            conflict = dict(base_conflict)
+            conflict["conflict_point"] = _compute_conflict_point(conflict, by_id)
+            cbs_log.append(
+                f"iter={it+1}: conflict#{cidx+1} pair=({conflict['pipe_a']},{conflict['pipe_b']}) "
+                f"d={conflict.get('distance')} req={conflict.get('required_distance')}"
+            )
+            constraint = make_conflict_constraint(conflict, padding)
+            pair = [conflict["pipe_a"], conflict["pipe_b"]]
+            pair.sort(
+                key=lambda pid: (
+                    -involvement.get(pid, 0),
+                    -int(bool(by_id.get(pid, {}).get("degraded_result", False))),
+                )
+            )
+
+            for pid in pair:
+                cbs_attempts += 1
+                cbs_log.append(f"iter={it+1}: try reroute {pid}")
+                rerouted = _reroute_one_pipe_with_constraint(case, results, pid, constraint)
+                if rerouted is None:
+                    cbs_log.append(f"iter={it+1}: reroute {pid} failed")
+                    continue
+
+                cand_conflicts = detect_pipe_conflicts(rerouted, pipe_by_id)
+                for item in rerouted:
+                    item["conflict_count"] = sum(1 for c in cand_conflicts if item["id"] in (c["pipe_a"], c["pipe_b"]))
+                cand_bend_viol = sum(int(p.get("bend_rule_violation_count", 0)) for p in rerouted if p.get("success"))
+                if cand_bend_viol > 0:
+                    cbs_log.append(f"iter={it+1}: reroute {pid} rejected bend_violations={cand_bend_viol}")
+                    continue
+                cand_business = _business_score(rerouted, cand_conflicts)
+                cand_score = score_solution(rerouted, cand_conflicts)
+                cbs_log.append(f"iter={it+1}: reroute {pid} candidate score={cand_business}")
+                if best_candidate is None or (cand_business < best_candidate[1]) or (
+                    cand_business == best_candidate[1] and cand_score < best_candidate[0]
+                ):
+                    best_candidate = (cand_score, cand_business, rerouted, cand_conflicts, pid)
+
+        if best_candidate is None:
+            no_improvement_reason = "no_feasible_candidate"
+            cbs_log.append(f"iter={it+1}: no feasible candidate")
             break
 
-        candidates.sort(key=lambda x: x[0])
-        best_score, best_results, best_pid = candidates[0]
-        current_score = score_solution(results, conflicts)
-        if best_score < current_score:
+        _, best_business, best_results, best_conflicts, best_pid = best_candidate
+        if best_business < current_business:
             results = best_results
-            conflicts = detect_pipe_conflicts(results, pipe_by_id)
-            cbs_log.append(f"iter={it+1}: accepted reroute on {best_pid}, new_conflicts={len(conflicts)}")
+            conflicts = best_conflicts
+            _refresh_conflict_counts(conflicts)
+            cbs_log.append(f"iter={it+1}: accepted {best_pid}, conflicts={len(conflicts)}")
         else:
-            cbs_log.append(f"iter={it+1}: no improvement, stop.")
+            no_improvement_reason = "no_candidate_improves_global_quality"
+            cbs_log.append(f"iter={it+1}: no improvement")
             break
 
     remaining = len(conflicts)
+    _refresh_conflict_counts(conflicts)
+    degraded_pipe_count = 0
+    for item in results:
+        degraded = bool(
+            item.get("success")
+            and (
+                int(item.get("conflict_count", 0)) > 0
+                or int(item.get("bend_rule_violation_count", 0)) > 0
+                or not bool(item.get("min_bend_radius_ok", True))
+            )
+        )
+        item["degraded_result"] = degraded
+        if degraded:
+            degraded_pipe_count += 1
+
     return {
         "pipes": results,
         "conflicts": conflicts,
         "cbs_enabled": True,
         "cbs_iterations": iterations,
+        "cbs_attempts": cbs_attempts,
         "cbs_resolved_conflicts": max(0, initial_conflicts_count - remaining),
         "cbs_remaining_conflicts": remaining,
+        "cbs_no_improvement_reason": no_improvement_reason,
+        "unresolved_conflicts": remaining > 0,
+        "degraded_pipe_count": degraded_pipe_count,
         "cbs_log": cbs_log,
     }

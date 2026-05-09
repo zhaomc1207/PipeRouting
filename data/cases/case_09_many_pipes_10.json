@@ -1,0 +1,37 @@
+﻿{
+  "workspace": {
+    "min": [0, 0, 0],
+    "max": [1200, 900, 700],
+    "resolution": 40
+  },
+  "obstacles": [
+    {"id": "obs_1", "type": "box", "min": [280, 180, 120], "max": [460, 360, 340]},
+    {"id": "obs_2", "type": "box", "min": [520, 420, 120], "max": [700, 620, 360]},
+    {"id": "obs_3", "type": "box", "min": [760, 220, 120], "max": [920, 420, 340]},
+    {"id": "obs_4", "type": "box", "min": [520, 120, 380], "max": [760, 300, 560]}
+  ],
+  "pipes": [
+    {"id": "pipe_1", "start": [60, 80, 100], "end": [1120, 780, 280], "diameter": 18, "clearance": 12, "min_bend_radius": 50},
+    {"id": "pipe_2", "start": [60, 160, 120], "end": [1120, 720, 300], "diameter": 18, "clearance": 12, "min_bend_radius": 50},
+    {"id": "pipe_3", "start": [60, 240, 140], "end": [1120, 660, 320], "diameter": 18, "clearance": 12, "min_bend_radius": 50},
+    {"id": "pipe_4", "start": [60, 320, 220], "end": [1120, 600, 420], "diameter": 16, "clearance": 10, "min_bend_radius": 45},
+    {"id": "pipe_5", "start": [60, 400, 100], "end": [1120, 540, 280], "diameter": 16, "clearance": 10, "min_bend_radius": 45},
+    {"id": "pipe_6", "start": [60, 480, 120], "end": [1120, 480, 300], "diameter": 16, "clearance": 10, "min_bend_radius": 45},
+    {"id": "pipe_7", "start": [60, 560, 140], "end": [1120, 420, 320], "diameter": 16, "clearance": 10, "min_bend_radius": 45},
+    {"id": "pipe_8", "start": [60, 640, 120], "end": [1120, 360, 300], "diameter": 14, "clearance": 10, "min_bend_radius": 40},
+    {"id": "pipe_9", "start": [60, 720, 100], "end": [1120, 300, 280], "diameter": 14, "clearance": 10, "min_bend_radius": 40},
+    {"id": "pipe_10", "start": [60, 800, 120], "end": [1120, 240, 300], "diameter": 14, "clearance": 10, "min_bend_radius": 40}
+  ],
+  "clamp_candidates": [
+    {"id": "clamp_p1", "position": [360, 110, 220], "radius": 80, "applies_to": ["pipe_1"]},
+    {"id": "clamp_p2", "position": [380, 170, 220], "radius": 80, "applies_to": ["pipe_2"]},
+    {"id": "clamp_p3", "position": [400, 230, 220], "radius": 80, "applies_to": ["pipe_3"]},
+    {"id": "clamp_p4", "position": [420, 290, 220], "radius": 80, "applies_to": ["pipe_4"]},
+    {"id": "clamp_p5", "position": [440, 350, 220], "radius": 80, "applies_to": ["pipe_5"]},
+    {"id": "clamp_p6", "position": [460, 410, 220], "radius": 80, "applies_to": ["pipe_6"]},
+    {"id": "clamp_p7", "position": [480, 470, 220], "radius": 80, "applies_to": ["pipe_7"]},
+    {"id": "clamp_p8", "position": [500, 530, 220], "radius": 80, "applies_to": ["pipe_8"]},
+    {"id": "clamp_p9", "position": [520, 590, 220], "radius": 80, "applies_to": ["pipe_9"]},
+    {"id": "clamp_p10", "position": [540, 650, 220], "radius": 80, "applies_to": ["pipe_10"]}
+  ]
+}

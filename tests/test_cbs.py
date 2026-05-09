@@ -129,3 +129,40 @@ def test_simplified_cbs_can_reduce_conflict_with_candidate(monkeypatch) -> None:
     out = simplified_cbs(case, initial, max_iterations=3, padding=15.0)
     assert out["cbs_resolved_conflicts"] >= 1
     assert out["cbs_remaining_conflicts"] == 0
+
+
+def test_simplified_cbs_rejects_candidate_with_bend_violations(monkeypatch) -> None:
+    case = RoutingCase(
+        workspace=Workspace((0, 0, 0), (120, 120, 120), 2),
+        obstacles=[],
+        pipes=[
+            Pipe("p1", (0, 0, 0), (100, 0, 0), 10, 5, 30),
+            Pipe("p2", (0, 8, 0), (100, 8, 0), 10, 5, 30),
+        ],
+        clamp_candidates=[],
+    )
+    initial = {
+        "pipes": [
+            {"id": "p1", "success": True, "raw_path": [[0, 0, 0], [100, 0, 0]], "smoothed_path": [[0, 0, 0], [100, 0, 0]], "path": [[0, 0, 0], [100, 0, 0]], "length": 100.0, "bend_count": 0, "bend_rule_violation_count": 0, "min_bend_radius_ok": True},
+            {"id": "p2", "success": True, "raw_path": [[0, 8, 0], [100, 8, 0]], "smoothed_path": [[0, 8, 0], [100, 8, 0]], "path": [[0, 8, 0], [100, 8, 0]], "length": 100.0, "bend_count": 0, "bend_rule_violation_count": 0, "min_bend_radius_ok": True},
+        ],
+        "conflicts": [],
+    }
+
+    def _bad_reroute(_case, results, pipe_id, _constraint):
+        out = [dict(x) for x in results]
+        if pipe_id == "p2":
+            p2 = next(x for x in out if x["id"] == "p2")
+            # Sharp zig-zag to trigger bend violations under min_bend_radius=30
+            p2["path"] = [[0, 8, 0], [20, 8, 0], [20, 20, 0], [40, 20, 0], [40, 8, 0], [100, 8, 0]]
+            p2["raw_path"] = p2["path"]
+            p2["smoothed_path"] = p2["path"]
+            p2["bend_rule_violation_count"] = 3
+            p2["min_bend_radius_ok"] = False
+            return out
+        return None
+
+    monkeypatch.setattr(cbs, "_reroute_one_pipe_with_constraint", _bad_reroute)
+    out = simplified_cbs(case, initial, max_iterations=2, padding=15.0)
+    # Candidate should be rejected; conflict remains unresolved.
+    assert out["cbs_remaining_conflicts"] >= 1

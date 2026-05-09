@@ -1,0 +1,1261 @@
+{
+  "pipes": [
+    {
+      "id": "pipe_1",
+      "success": true,
+      "raw_path": [
+        [
+          80.0,
+          80.0,
+          120.0
+        ],
+        [
+          120.0,
+          80.0,
+          120.0
+        ],
+        [
+          160.0,
+          80.0,
+          120.0
+        ],
+        [
+          200.0,
+          80.0,
+          120.0
+        ],
+        [
+          240.0,
+          80.0,
+          120.0
+        ],
+        [
+          280.0,
+          80.0,
+          120.0
+        ],
+        [
+          320.0,
+          80.0,
+          120.0
+        ],
+        [
+          360.0,
+          80.0,
+          120.0
+        ],
+        [
+          400.0,
+          80.0,
+          120.0
+        ],
+        [
+          440.0,
+          80.0,
+          120.0
+        ],
+        [
+          480.0,
+          80.0,
+          120.0
+        ],
+        [
+          520.0,
+          80.0,
+          120.0
+        ],
+        [
+          560.0,
+          80.0,
+          120.0
+        ],
+        [
+          600.0,
+          80.0,
+          120.0
+        ],
+        [
+          640.0,
+          80.0,
+          120.0
+        ],
+        [
+          680.0,
+          80.0,
+          120.0
+        ],
+        [
+          720.0,
+          80.0,
+          120.0
+        ],
+        [
+          760.0,
+          80.0,
+          120.0
+        ],
+        [
+          800.0,
+          80.0,
+          120.0
+        ],
+        [
+          840.0,
+          80.0,
+          120.0
+        ],
+        [
+          880.0,
+          80.0,
+          120.0
+        ],
+        [
+          920.0,
+          80.0,
+          120.0
+        ],
+        [
+          960.0,
+          80.0,
+          120.0
+        ],
+        [
+          1000.0,
+          80.0,
+          120.0
+        ],
+        [
+          1040.0,
+          80.0,
+          120.0
+        ],
+        [
+          1080.0,
+          80.0,
+          120.0
+        ],
+        [
+          1120.0,
+          80.0,
+          120.0
+        ]
+      ],
+      "smoothed_path": [
+        [
+          80.0,
+          80.0,
+          120.0
+        ],
+        [
+          1120.0,
+          80.0,
+          120.0
+        ]
+      ],
+      "path": [
+        [
+          80.0,
+          80.0,
+          120.0
+        ],
+        [
+          1120.0,
+          80.0,
+          120.0
+        ]
+      ],
+      "length": 1040.0,
+      "bend_count": 0,
+      "conflict_count": 0,
+      "conflicts": [],
+      "smoothing_applied": true,
+      "smoothing_reverted": false,
+      "smoothing_revert_reason": null,
+      "used_clamps": [],
+      "min_distance_to_clamps": {
+        "clamp_p1": 381.051177665153
+      },
+      "own_clamps": [
+        "clamp_p1"
+      ],
+      "missed_clamps": [
+        "clamp_p1"
+      ],
+      "min_bend_radius_ok": true,
+      "bend_radius_violation_count": 0,
+      "bend_radius_violations": [],
+      "min_bend_radius_required": 50.0,
+      "min_bend_radius_observed": Infinity,
+      "bend_rule_violation_count": 0,
+      "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
+      "error": null,
+      "local_reroute_applied": false,
+      "local_reroute_reason": null,
+      "rerouted": false,
+      "reroute_reason": null,
+      "affected_by_changed_region": false,
+      "cbs_fallback_applied": false,
+      "cbs_fallback_reason": null,
+      "cbs_rerouted": false,
+      "cbs_constraints_count": 0,
+      "cbs_reroute_reason": null
+    },
+    {
+      "id": "pipe_2",
+      "success": true,
+      "raw_path": [
+        [
+          80.0,
+          200.0,
+          160.0
+        ],
+        [
+          120.0,
+          200.0,
+          160.0
+        ],
+        [
+          160.0,
+          200.0,
+          160.0
+        ],
+        [
+          200.0,
+          200.0,
+          160.0
+        ],
+        [
+          240.0,
+          200.0,
+          160.0
+        ],
+        [
+          280.0,
+          200.0,
+          160.0
+        ],
+        [
+          320.0,
+          200.0,
+          160.0
+        ],
+        [
+          360.0,
+          200.0,
+          160.0
+        ],
+        [
+          400.0,
+          200.0,
+          160.0
+        ],
+        [
+          440.0,
+          200.0,
+          160.0
+        ],
+        [
+          480.0,
+          200.0,
+          160.0
+        ],
+        [
+          520.0,
+          200.0,
+          160.0
+        ],
+        [
+          560.0,
+          200.0,
+          160.0
+        ],
+        [
+          600.0,
+          200.0,
+          160.0
+        ],
+        [
+          640.0,
+          200.0,
+          160.0
+        ],
+        [
+          680.0,
+          200.0,
+          160.0
+        ],
+        [
+          720.0,
+          200.0,
+          160.0
+        ],
+        [
+          760.0,
+          200.0,
+          160.0
+        ],
+        [
+          800.0,
+          200.0,
+          160.0
+        ],
+        [
+          840.0,
+          200.0,
+          160.0
+        ],
+        [
+          880.0,
+          200.0,
+          160.0
+        ],
+        [
+          920.0,
+          200.0,
+          160.0
+        ],
+        [
+          960.0,
+          200.0,
+          160.0
+        ],
+        [
+          1000.0,
+          200.0,
+          160.0
+        ],
+        [
+          1040.0,
+          200.0,
+          160.0
+        ],
+        [
+          1080.0,
+          200.0,
+          160.0
+        ],
+        [
+          1120.0,
+          200.0,
+          160.0
+        ]
+      ],
+      "smoothed_path": [
+        [
+          80.0,
+          200.0,
+          160.0
+        ],
+        [
+          1120.0,
+          200.0,
+          160.0
+        ]
+      ],
+      "path": [
+        [
+          80.0,
+          200.0,
+          160.0
+        ],
+        [
+          1120.0,
+          200.0,
+          160.0
+        ]
+      ],
+      "length": 1040.0,
+      "bend_count": 0,
+      "conflict_count": 0,
+      "conflicts": [],
+      "smoothing_applied": true,
+      "smoothing_reverted": false,
+      "smoothing_revert_reason": null,
+      "used_clamps": [],
+      "min_distance_to_clamps": {
+        "clamp_p2": 368.9173349139343
+      },
+      "own_clamps": [
+        "clamp_p2"
+      ],
+      "missed_clamps": [
+        "clamp_p2"
+      ],
+      "min_bend_radius_ok": true,
+      "bend_radius_violation_count": 0,
+      "bend_radius_violations": [],
+      "min_bend_radius_required": 50.0,
+      "min_bend_radius_observed": Infinity,
+      "bend_rule_violation_count": 0,
+      "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
+      "error": null,
+      "local_reroute_applied": false,
+      "local_reroute_reason": null,
+      "rerouted": false,
+      "reroute_reason": null,
+      "affected_by_changed_region": false,
+      "cbs_fallback_applied": false,
+      "cbs_fallback_reason": null,
+      "cbs_rerouted": false,
+      "cbs_constraints_count": 0,
+      "cbs_reroute_reason": null
+    },
+    {
+      "id": "pipe_3",
+      "success": true,
+      "raw_path": [
+        [
+          80.0,
+          320.0,
+          200.0
+        ],
+        [
+          120.0,
+          320.0,
+          200.0
+        ],
+        [
+          160.0,
+          320.0,
+          200.0
+        ],
+        [
+          200.0,
+          320.0,
+          200.0
+        ],
+        [
+          240.0,
+          320.0,
+          200.0
+        ],
+        [
+          280.0,
+          320.0,
+          200.0
+        ],
+        [
+          320.0,
+          320.0,
+          200.0
+        ],
+        [
+          360.0,
+          320.0,
+          200.0
+        ],
+        [
+          400.0,
+          320.0,
+          200.0
+        ],
+        [
+          440.0,
+          320.0,
+          200.0
+        ],
+        [
+          480.0,
+          320.0,
+          200.0
+        ],
+        [
+          520.0,
+          320.0,
+          200.0
+        ],
+        [
+          560.0,
+          320.0,
+          200.0
+        ],
+        [
+          600.0,
+          320.0,
+          200.0
+        ],
+        [
+          640.0,
+          320.0,
+          200.0
+        ],
+        [
+          680.0,
+          320.0,
+          200.0
+        ],
+        [
+          720.0,
+          320.0,
+          200.0
+        ],
+        [
+          760.0,
+          320.0,
+          200.0
+        ],
+        [
+          800.0,
+          320.0,
+          200.0
+        ],
+        [
+          840.0,
+          320.0,
+          200.0
+        ],
+        [
+          880.0,
+          320.0,
+          200.0
+        ],
+        [
+          920.0,
+          320.0,
+          200.0
+        ],
+        [
+          960.0,
+          320.0,
+          200.0
+        ],
+        [
+          1000.0,
+          320.0,
+          200.0
+        ],
+        [
+          1040.0,
+          320.0,
+          200.0
+        ],
+        [
+          1080.0,
+          320.0,
+          200.0
+        ],
+        [
+          1120.0,
+          320.0,
+          200.0
+        ]
+      ],
+      "smoothed_path": [
+        [
+          80.0,
+          320.0,
+          200.0
+        ],
+        [
+          440.0,
+          320.0,
+          200.0
+        ],
+        [
+          1120.0,
+          320.0,
+          200.0
+        ]
+      ],
+      "path": [
+        [
+          80.0,
+          320.0,
+          200.0
+        ],
+        [
+          440.0,
+          320.0,
+          200.0
+        ],
+        [
+          1120.0,
+          320.0,
+          200.0
+        ]
+      ],
+      "length": 1040.0,
+      "bend_count": 1,
+      "conflict_count": 0,
+      "conflicts": [],
+      "smoothing_applied": true,
+      "smoothing_reverted": false,
+      "smoothing_revert_reason": null,
+      "used_clamps": [
+        "clamp_p3"
+      ],
+      "min_distance_to_clamps": {
+        "clamp_p3": 63.245553203367585
+      },
+      "own_clamps": [
+        "clamp_p3"
+      ],
+      "missed_clamps": [],
+      "min_bend_radius_ok": true,
+      "bend_radius_violation_count": 0,
+      "bend_radius_violations": [],
+      "min_bend_radius_required": 50.0,
+      "min_bend_radius_observed": Infinity,
+      "bend_rule_violation_count": 0,
+      "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
+      "error": null,
+      "local_reroute_applied": false,
+      "local_reroute_reason": null,
+      "rerouted": false,
+      "reroute_reason": null,
+      "affected_by_changed_region": false,
+      "cbs_fallback_applied": false,
+      "cbs_fallback_reason": null,
+      "cbs_rerouted": false,
+      "cbs_constraints_count": 0,
+      "cbs_reroute_reason": null
+    },
+    {
+      "id": "pipe_4",
+      "success": true,
+      "raw_path": [
+        [
+          80.0,
+          440.0,
+          240.0
+        ],
+        [
+          120.0,
+          440.0,
+          240.0
+        ],
+        [
+          160.0,
+          440.0,
+          240.0
+        ],
+        [
+          200.0,
+          440.0,
+          240.0
+        ],
+        [
+          240.0,
+          440.0,
+          240.0
+        ],
+        [
+          280.0,
+          440.0,
+          240.0
+        ],
+        [
+          320.0,
+          440.0,
+          240.0
+        ],
+        [
+          360.0,
+          440.0,
+          240.0
+        ],
+        [
+          400.0,
+          440.0,
+          240.0
+        ],
+        [
+          440.0,
+          440.0,
+          240.0
+        ],
+        [
+          480.0,
+          440.0,
+          240.0
+        ],
+        [
+          520.0,
+          440.0,
+          240.0
+        ],
+        [
+          560.0,
+          440.0,
+          240.0
+        ],
+        [
+          600.0,
+          440.0,
+          240.0
+        ],
+        [
+          640.0,
+          440.0,
+          240.0
+        ],
+        [
+          680.0,
+          440.0,
+          240.0
+        ],
+        [
+          720.0,
+          440.0,
+          240.0
+        ],
+        [
+          760.0,
+          440.0,
+          240.0
+        ],
+        [
+          800.0,
+          440.0,
+          240.0
+        ],
+        [
+          840.0,
+          440.0,
+          240.0
+        ],
+        [
+          880.0,
+          440.0,
+          240.0
+        ],
+        [
+          920.0,
+          440.0,
+          240.0
+        ],
+        [
+          960.0,
+          440.0,
+          240.0
+        ],
+        [
+          1000.0,
+          440.0,
+          240.0
+        ],
+        [
+          1040.0,
+          440.0,
+          240.0
+        ],
+        [
+          1080.0,
+          440.0,
+          240.0
+        ],
+        [
+          1120.0,
+          440.0,
+          240.0
+        ]
+      ],
+      "smoothed_path": [
+        [
+          80.0,
+          440.0,
+          240.0
+        ],
+        [
+          440.0,
+          440.0,
+          240.0
+        ],
+        [
+          1120.0,
+          440.0,
+          240.0
+        ]
+      ],
+      "path": [
+        [
+          80.0,
+          440.0,
+          240.0
+        ],
+        [
+          440.0,
+          440.0,
+          240.0
+        ],
+        [
+          1120.0,
+          440.0,
+          240.0
+        ]
+      ],
+      "length": 1040.0,
+      "bend_count": 1,
+      "conflict_count": 0,
+      "conflicts": [],
+      "smoothing_applied": true,
+      "smoothing_reverted": false,
+      "smoothing_revert_reason": null,
+      "used_clamps": [
+        "clamp_p4"
+      ],
+      "min_distance_to_clamps": {
+        "clamp_p4": 30.0
+      },
+      "own_clamps": [
+        "clamp_p4"
+      ],
+      "missed_clamps": [],
+      "min_bend_radius_ok": true,
+      "bend_radius_violation_count": 0,
+      "bend_radius_violations": [],
+      "min_bend_radius_required": 45.0,
+      "min_bend_radius_observed": Infinity,
+      "bend_rule_violation_count": 0,
+      "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
+      "error": null,
+      "local_reroute_applied": false,
+      "local_reroute_reason": null,
+      "rerouted": false,
+      "reroute_reason": null,
+      "affected_by_changed_region": false,
+      "cbs_fallback_applied": false,
+      "cbs_fallback_reason": null,
+      "cbs_rerouted": false,
+      "cbs_constraints_count": 0,
+      "cbs_reroute_reason": null
+    },
+    {
+      "id": "pipe_5",
+      "success": true,
+      "raw_path": [
+        [
+          80.0,
+          560.0,
+          280.0
+        ],
+        [
+          120.0,
+          560.0,
+          280.0
+        ],
+        [
+          160.0,
+          560.0,
+          280.0
+        ],
+        [
+          200.0,
+          560.0,
+          280.0
+        ],
+        [
+          240.0,
+          560.0,
+          280.0
+        ],
+        [
+          280.0,
+          560.0,
+          280.0
+        ],
+        [
+          320.0,
+          560.0,
+          280.0
+        ],
+        [
+          360.0,
+          560.0,
+          280.0
+        ],
+        [
+          400.0,
+          560.0,
+          280.0
+        ],
+        [
+          440.0,
+          560.0,
+          280.0
+        ],
+        [
+          480.0,
+          560.0,
+          280.0
+        ],
+        [
+          520.0,
+          560.0,
+          280.0
+        ],
+        [
+          560.0,
+          560.0,
+          280.0
+        ],
+        [
+          600.0,
+          560.0,
+          280.0
+        ],
+        [
+          640.0,
+          560.0,
+          280.0
+        ],
+        [
+          680.0,
+          560.0,
+          280.0
+        ],
+        [
+          720.0,
+          560.0,
+          280.0
+        ],
+        [
+          760.0,
+          560.0,
+          280.0
+        ],
+        [
+          800.0,
+          560.0,
+          280.0
+        ],
+        [
+          840.0,
+          560.0,
+          280.0
+        ],
+        [
+          880.0,
+          560.0,
+          280.0
+        ],
+        [
+          920.0,
+          560.0,
+          280.0
+        ],
+        [
+          960.0,
+          560.0,
+          280.0
+        ],
+        [
+          1000.0,
+          560.0,
+          280.0
+        ],
+        [
+          1040.0,
+          560.0,
+          280.0
+        ],
+        [
+          1080.0,
+          560.0,
+          280.0
+        ],
+        [
+          1120.0,
+          560.0,
+          280.0
+        ]
+      ],
+      "smoothed_path": [
+        [
+          80.0,
+          560.0,
+          280.0
+        ],
+        [
+          440.0,
+          560.0,
+          280.0
+        ],
+        [
+          1120.0,
+          560.0,
+          280.0
+        ]
+      ],
+      "path": [
+        [
+          80.0,
+          560.0,
+          280.0
+        ],
+        [
+          440.0,
+          560.0,
+          280.0
+        ],
+        [
+          1120.0,
+          560.0,
+          280.0
+        ]
+      ],
+      "length": 1040.0,
+      "bend_count": 1,
+      "conflict_count": 0,
+      "conflicts": [],
+      "smoothing_applied": true,
+      "smoothing_reverted": false,
+      "smoothing_revert_reason": null,
+      "used_clamps": [
+        "clamp_p5"
+      ],
+      "min_distance_to_clamps": {
+        "clamp_p5": 66.332495807108
+      },
+      "own_clamps": [
+        "clamp_p5"
+      ],
+      "missed_clamps": [],
+      "min_bend_radius_ok": true,
+      "bend_radius_violation_count": 0,
+      "bend_radius_violations": [],
+      "min_bend_radius_required": 45.0,
+      "min_bend_radius_observed": Infinity,
+      "bend_rule_violation_count": 0,
+      "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
+      "error": null,
+      "local_reroute_applied": false,
+      "local_reroute_reason": null,
+      "rerouted": false,
+      "reroute_reason": null,
+      "affected_by_changed_region": false,
+      "cbs_fallback_applied": false,
+      "cbs_fallback_reason": null,
+      "cbs_rerouted": false,
+      "cbs_constraints_count": 0,
+      "cbs_reroute_reason": null
+    },
+    {
+      "id": "pipe_6",
+      "success": true,
+      "raw_path": [
+        [
+          80.0,
+          680.0,
+          320.0
+        ],
+        [
+          120.0,
+          680.0,
+          320.0
+        ],
+        [
+          160.0,
+          680.0,
+          320.0
+        ],
+        [
+          200.0,
+          680.0,
+          320.0
+        ],
+        [
+          240.0,
+          680.0,
+          320.0
+        ],
+        [
+          280.0,
+          680.0,
+          320.0
+        ],
+        [
+          320.0,
+          680.0,
+          320.0
+        ],
+        [
+          360.0,
+          680.0,
+          320.0
+        ],
+        [
+          400.0,
+          680.0,
+          320.0
+        ],
+        [
+          440.0,
+          680.0,
+          320.0
+        ],
+        [
+          480.0,
+          680.0,
+          320.0
+        ],
+        [
+          520.0,
+          680.0,
+          320.0
+        ],
+        [
+          560.0,
+          680.0,
+          320.0
+        ],
+        [
+          600.0,
+          680.0,
+          320.0
+        ],
+        [
+          640.0,
+          680.0,
+          320.0
+        ],
+        [
+          680.0,
+          680.0,
+          320.0
+        ],
+        [
+          720.0,
+          680.0,
+          320.0
+        ],
+        [
+          760.0,
+          680.0,
+          320.0
+        ],
+        [
+          800.0,
+          680.0,
+          320.0
+        ],
+        [
+          840.0,
+          680.0,
+          320.0
+        ],
+        [
+          880.0,
+          680.0,
+          320.0
+        ],
+        [
+          920.0,
+          680.0,
+          320.0
+        ],
+        [
+          960.0,
+          680.0,
+          320.0
+        ],
+        [
+          1000.0,
+          680.0,
+          320.0
+        ],
+        [
+          1040.0,
+          680.0,
+          320.0
+        ],
+        [
+          1080.0,
+          680.0,
+          320.0
+        ],
+        [
+          1120.0,
+          680.0,
+          320.0
+        ]
+      ],
+      "smoothed_path": [
+        [
+          80.0,
+          680.0,
+          320.0
+        ],
+        [
+          1120.0,
+          680.0,
+          320.0
+        ]
+      ],
+      "path": [
+        [
+          80.0,
+          680.0,
+          320.0
+        ],
+        [
+          1120.0,
+          680.0,
+          320.0
+        ]
+      ],
+      "length": 1040.0,
+      "bend_count": 0,
+      "conflict_count": 0,
+      "conflicts": [],
+      "smoothing_applied": true,
+      "smoothing_reverted": false,
+      "smoothing_revert_reason": null,
+      "used_clamps": [],
+      "min_distance_to_clamps": {
+        "clamp_p6": 407.0626487409524
+      },
+      "own_clamps": [
+        "clamp_p6"
+      ],
+      "missed_clamps": [
+        "clamp_p6"
+      ],
+      "min_bend_radius_ok": true,
+      "bend_radius_violation_count": 0,
+      "bend_radius_violations": [],
+      "min_bend_radius_required": 45.0,
+      "min_bend_radius_observed": Infinity,
+      "bend_rule_violation_count": 0,
+      "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
+      "error": null,
+      "local_reroute_applied": false,
+      "local_reroute_reason": null,
+      "rerouted": false,
+      "reroute_reason": null,
+      "affected_by_changed_region": false,
+      "cbs_fallback_applied": false,
+      "cbs_fallback_reason": null,
+      "cbs_rerouted": false,
+      "cbs_constraints_count": 0,
+      "cbs_reroute_reason": null
+    }
+  ],
+  "conflicts": [],
+  "cbs_enabled": true,
+  "cbs_iterations": 0,
+  "cbs_attempts": 0,
+  "cbs_resolved_conflicts": 0,
+  "cbs_remaining_conflicts": 0,
+  "cbs_no_improvement_reason": null,
+  "unresolved_conflicts": false,
+  "degraded_pipe_count": 0,
+  "cbs_log": [
+    "No conflicts detected; CBS exits immediately."
+  ],
+  "input_invalid": false,
+  "invalid_pipe_ids": [],
+  "invalid_reason": ""
+}

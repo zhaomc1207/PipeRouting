@@ -32,8 +32,20 @@ def apply_simplified_cbs_fallback(
         if not current_conflicts:
             break
 
-        first = current_conflicts[0]
-        candidates = [first["pipe_b"], first["pipe_a"]]
+        prioritized = sorted(
+            current_conflicts,
+            key=lambda c: (
+                float(c.get("distance", 0.0)),
+                float(c.get("distance", 0.0)) - float(c.get("required_distance", 0.0)),
+            ),
+        )
+        first = prioritized[0]
+        involvement: dict[str, int] = {}
+        for c in current_conflicts:
+            involvement[c["pipe_a"]] = involvement.get(c["pipe_a"], 0) + 1
+            involvement[c["pipe_b"]] = involvement.get(c["pipe_b"], 0) + 1
+        pair = [first["pipe_a"], first["pipe_b"]]
+        candidates = sorted(pair, key=lambda pid: involvement.get(pid, 0), reverse=True)
         improved = False
 
         for pid in candidates:
@@ -85,4 +97,3 @@ def apply_simplified_cbs_fallback(
             break
 
     return current_conflicts
-

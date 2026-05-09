@@ -140,10 +140,14 @@ def astar_route(
 
     if not grid.in_bounds(start) or not grid.in_bounds(goal):
         return AStarResult(False, [], "Start or end point out of workspace bounds.")
-    if is_cell_blocked(grid, start, inflated_obstacles, dynamic_blocks):
+    if is_cell_blocked(grid, start, inflated_obstacles, dynamic_blocks=None):
         return AStarResult(False, [], "Start point blocked by obstacle.")
-    if is_cell_blocked(grid, goal, inflated_obstacles, dynamic_blocks):
+    if dynamic_blocks and start in dynamic_blocks:
+        return AStarResult(False, [], "Start point blocked by dynamic routing reservation.")
+    if is_cell_blocked(grid, goal, inflated_obstacles, dynamic_blocks=None):
         return AStarResult(False, [], "End point blocked by obstacle.")
+    if dynamic_blocks and goal in dynamic_blocks:
+        return AStarResult(False, [], "End point blocked by dynamic routing reservation.")
 
     open_heap: list[tuple[float, GridIndex]] = []
     heapq.heappush(open_heap, (0.0, start))

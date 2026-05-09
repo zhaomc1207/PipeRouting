@@ -293,6 +293,8 @@
       "min_bend_radius_observed": 445.9806668306621,
       "bend_rule_violation_count": 0,
       "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
       "error": null,
       "local_reroute_applied": false,
       "local_reroute_reason": null,
@@ -588,6 +590,8 @@
       "min_bend_radius_observed": 465.6628989772225,
       "bend_rule_violation_count": 0,
       "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
       "error": null,
       "local_reroute_applied": false,
       "local_reroute_reason": null,
@@ -888,6 +892,8 @@
       "min_bend_radius_observed": 508.7560870843783,
       "bend_rule_violation_count": 0,
       "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
       "error": null,
       "local_reroute_applied": false,
       "local_reroute_reason": null,
@@ -904,9 +910,16 @@
   "conflicts": [],
   "cbs_enabled": true,
   "cbs_iterations": 0,
+  "cbs_attempts": 0,
   "cbs_resolved_conflicts": 0,
   "cbs_remaining_conflicts": 0,
+  "cbs_no_improvement_reason": null,
+  "unresolved_conflicts": false,
+  "degraded_pipe_count": 0,
   "cbs_log": [
     "No conflicts detected; CBS exits immediately."
-  ]
+  ],
+  "input_invalid": false,
+  "invalid_pipe_ids": [],
+  "invalid_reason": ""
 }

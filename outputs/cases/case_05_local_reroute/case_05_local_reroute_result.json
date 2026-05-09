@@ -283,6 +283,8 @@
       "min_bend_radius_observed": 631.3794023413122,
       "bend_rule_violation_count": 0,
       "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
       "error": null,
       "local_reroute_applied": false,
       "local_reroute_reason": null,
@@ -573,6 +575,8 @@
       "min_bend_radius_observed": 709.4314370524964,
       "bend_rule_violation_count": 0,
       "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
       "error": null,
       "local_reroute_applied": false,
       "local_reroute_reason": null,
@@ -666,118 +670,118 @@
         ],
         [
           420.0,
-          80.0,
-          380.0
+          100.0,
+          360.0
         ],
         [
           440.0,
-          100.0,
-          380.0
+          120.0,
+          360.0
         ],
         [
           460.0,
-          120.0,
-          380.0
+          140.0,
+          360.0
         ],
         [
           480.0,
-          140.0,
-          380.0
+          160.0,
+          360.0
         ],
         [
           500.0,
-          160.0,
-          380.0
+          180.0,
+          360.0
         ],
         [
           520.0,
-          180.0,
-          380.0
+          200.0,
+          360.0
         ],
         [
           540.0,
-          200.0,
-          380.0
+          220.0,
+          360.0
         ],
         [
           560.0,
-          220.0,
-          380.0
+          240.0,
+          360.0
         ],
         [
           580.0,
-          240.0,
-          380.0
+          260.0,
+          360.0
         ],
         [
           600.0,
-          260.0,
-          380.0
+          280.0,
+          360.0
         ],
         [
           620.0,
-          280.0,
-          380.0
+          300.0,
+          360.0
         ],
         [
           640.0,
-          300.0,
-          380.0
+          320.0,
+          360.0
         ],
         [
           660.0,
-          320.0,
-          380.0
+          340.0,
+          360.0
         ],
         [
           680.0,
-          340.0,
-          380.0
+          360.0,
+          360.0
         ],
         [
           700.0,
-          360.0,
-          380.0
+          380.0,
+          360.0
         ],
         [
           720.0,
-          380.0,
-          380.0
+          400.0,
+          360.0
         ],
         [
           740.0,
-          400.0,
-          380.0
+          420.0,
+          360.0
         ],
         [
           760.0,
-          420.0,
-          400.0
+          440.0,
+          360.0
         ],
         [
           780.0,
-          440.0,
-          420.0
+          460.0,
+          360.0
         ],
         [
           800.0,
-          460.0,
-          420.0
+          480.0,
+          360.0
         ],
         [
           820.0,
-          480.0,
-          420.0
+          500.0,
+          360.0
         ],
         [
           840.0,
-          500.0,
-          420.0
+          520.0,
+          380.0
         ],
         [
           860.0,
-          520.0,
-          420.0
+          540.0,
+          400.0
         ],
         [
           880.0,
@@ -792,9 +796,9 @@
           80.0
         ],
         [
-          580.0,
-          240.0,
-          380.0
+          540.0,
+          220.0,
+          360.0
         ],
         [
           880.0,
@@ -809,9 +813,9 @@
           80.0
         ],
         [
-          580.0,
-          240.0,
-          380.0
+          540.0,
+          220.0,
+          360.0
         ],
         [
           880.0,
@@ -819,7 +823,7 @@
           420.0
         ]
       ],
-      "length": 998.159500896254,
+      "length": 994.5761259859446,
       "bend_count": 1,
       "conflict_count": 0,
       "conflicts": [],
@@ -834,9 +838,11 @@
       "bend_radius_violation_count": 0,
       "bend_radius_violations": [],
       "min_bend_radius_required": 50.0,
-      "min_bend_radius_observed": 815.3956896328799,
+      "min_bend_radius_observed": 850.2180335499521,
       "bend_rule_violation_count": 0,
       "bend_rule_violations": [],
+      "input_invalid": false,
+      "degraded_result": false,
       "error": null,
       "local_reroute_applied": false,
       "local_reroute_reason": null,
@@ -853,9 +859,16 @@
   "conflicts": [],
   "cbs_enabled": true,
   "cbs_iterations": 0,
+  "cbs_attempts": 0,
   "cbs_resolved_conflicts": 0,
   "cbs_remaining_conflicts": 0,
+  "cbs_no_improvement_reason": null,
+  "unresolved_conflicts": false,
+  "degraded_pipe_count": 0,
   "cbs_log": [
     "No conflicts detected; CBS exits immediately."
-  ]
+  ],
+  "input_invalid": false,
+  "invalid_pipe_ids": [],
+  "invalid_reason": ""
 }

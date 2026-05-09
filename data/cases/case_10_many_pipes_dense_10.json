@@ -1,0 +1,41 @@
+﻿{
+  "workspace": {
+    "min": [0, 0, 0],
+    "max": [1200, 900, 700],
+    "resolution": 40
+  },
+  "obstacles": [
+    {"id": "d1", "type": "box", "min": [220, 120, 80], "max": [360, 300, 300]},
+    {"id": "d2", "type": "box", "min": [220, 360, 120], "max": [360, 560, 360]},
+    {"id": "d3", "type": "box", "min": [220, 620, 80], "max": [360, 800, 320]},
+    {"id": "d4", "type": "box", "min": [460, 200, 120], "max": [620, 420, 360]},
+    {"id": "d5", "type": "box", "min": [460, 500, 120], "max": [620, 720, 360]},
+    {"id": "d6", "type": "box", "min": [720, 120, 80], "max": [880, 300, 320]},
+    {"id": "d7", "type": "box", "min": [720, 360, 120], "max": [880, 560, 360]},
+    {"id": "d8", "type": "box", "min": [720, 620, 80], "max": [880, 800, 320]}
+  ],
+  "pipes": [
+    {"id": "pipe_1", "start": [60, 70, 120], "end": [1140, 790, 260], "diameter": 16, "clearance": 10, "min_bend_radius": 45},
+    {"id": "pipe_2", "start": [60, 130, 120], "end": [1140, 730, 260], "diameter": 16, "clearance": 10, "min_bend_radius": 45},
+    {"id": "pipe_3", "start": [60, 190, 120], "end": [1140, 670, 260], "diameter": 16, "clearance": 10, "min_bend_radius": 45},
+    {"id": "pipe_4", "start": [60, 250, 120], "end": [1140, 610, 260], "diameter": 14, "clearance": 10, "min_bend_radius": 40},
+    {"id": "pipe_5", "start": [60, 310, 120], "end": [1140, 550, 260], "diameter": 14, "clearance": 10, "min_bend_radius": 40},
+    {"id": "pipe_6", "start": [60, 370, 120], "end": [1140, 490, 260], "diameter": 14, "clearance": 10, "min_bend_radius": 40},
+    {"id": "pipe_7", "start": [60, 430, 120], "end": [1140, 430, 260], "diameter": 14, "clearance": 10, "min_bend_radius": 40},
+    {"id": "pipe_8", "start": [60, 490, 120], "end": [1140, 370, 260], "diameter": 14, "clearance": 10, "min_bend_radius": 40},
+    {"id": "pipe_9", "start": [60, 550, 120], "end": [1140, 310, 260], "diameter": 14, "clearance": 10, "min_bend_radius": 40},
+    {"id": "pipe_10", "start": [60, 610, 120], "end": [1140, 250, 260], "diameter": 14, "clearance": 10, "min_bend_radius": 40}
+  ],
+  "clamp_candidates": [
+    {"id": "clamp_1", "position": [380, 100, 200], "radius": 70, "applies_to": ["pipe_1"]},
+    {"id": "clamp_2", "position": [380, 160, 200], "radius": 70, "applies_to": ["pipe_2"]},
+    {"id": "clamp_3", "position": [380, 220, 200], "radius": 70, "applies_to": ["pipe_3"]},
+    {"id": "clamp_4", "position": [380, 280, 200], "radius": 70, "applies_to": ["pipe_4"]},
+    {"id": "clamp_5", "position": [380, 340, 200], "radius": 70, "applies_to": ["pipe_5"]},
+    {"id": "clamp_6", "position": [380, 400, 200], "radius": 70, "applies_to": ["pipe_6"]},
+    {"id": "clamp_7", "position": [380, 460, 200], "radius": 70, "applies_to": ["pipe_7"]},
+    {"id": "clamp_8", "position": [380, 520, 200], "radius": 70, "applies_to": ["pipe_8"]},
+    {"id": "clamp_9", "position": [380, 580, 200], "radius": 70, "applies_to": ["pipe_9"]},
+    {"id": "clamp_10", "position": [380, 640, 200], "radius": 70, "applies_to": ["pipe_10"]}
+  ]
+}

@@ -6,21 +6,42 @@
 - failed_count: 0
 - total_length: 3189.539
 - total_conflicts: 0
+- unresolved_conflicts: False
+- cbs_iterations: 0
+- cbs_attempts: 0
+- cbs_resolved_conflicts: 0
+- cbs_remaining_conflicts: 0
+- input_invalid: False
+- invalid_pipe_ids: []
+- invalid_reason: 
+
+## CBS
+
+- No conflicts detected; CBS exits immediately.
 
 ### pipe_1
 - success: True
 - length: 1181.416
 - conflict_count: 0
 - bend_rule_violation_count: 0
+- input_invalid: False
+- degraded_result: False
+- error: None
 
 ### pipe_2
 - success: True
 - length: 1058.816
 - conflict_count: 0
 - bend_rule_violation_count: 0
+- input_invalid: False
+- degraded_result: False
+- error: None
 
 ### pipe_3
 - success: True
 - length: 949.308
 - conflict_count: 0
 - bend_rule_violation_count: 0
+- input_invalid: False
+- degraded_result: False
+- error: None

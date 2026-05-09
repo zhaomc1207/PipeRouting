@@ -2,25 +2,46 @@
 
 ## Summary
 - total_pipes: 3
-- success_count: 2
-- failed_count: 1
-- total_length: 2246.160
+- success_count: 3
+- failed_count: 0
+- total_length: 3093.701
 - total_conflicts: 0
+- unresolved_conflicts: False
+- cbs_iterations: 0
+- cbs_attempts: 0
+- cbs_resolved_conflicts: 0
+- cbs_remaining_conflicts: 0
+- input_invalid: False
+- invalid_pipe_ids: []
+- invalid_reason: 
+
+## CBS
+
+- No conflicts detected; CBS exits immediately.
 
 ### pipe_1
 - success: True
-- length: 1220.818
-- conflict_count: 0
-- bend_rule_violation_count: 3
-
-### pipe_2
-- success: False
-- length: 0.000
+- length: 1101.206
 - conflict_count: 0
 - bend_rule_violation_count: 0
+- input_invalid: False
+- degraded_result: False
+- error: None
+
+### pipe_2
+- success: True
+- length: 1034.829
+- conflict_count: 0
+- bend_rule_violation_count: 0
+- input_invalid: False
+- degraded_result: False
+- error: None
 
 ### pipe_3
 - success: True
-- length: 1025.342
+- length: 957.666
 - conflict_count: 0
 - bend_rule_violation_count: 0
+- input_invalid: False
+- degraded_result: False
+- error: None

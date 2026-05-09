@@ -185,3 +185,14 @@ def test_cbs_fallback_not_applied_when_no_conflicts() -> None:
     case = load_routing_case(Path("data/demo_case.json"))
     result = route_pipes_sequentially(case)
     assert all(p["cbs_fallback_applied"] is False for p in result["pipes"] if p["success"])
+
+
+def test_reverted_smoothing_with_bend_violation_is_marked_degraded() -> None:
+    case = load_routing_case(Path("data/cases/case_03_multi_pipe_conflict.json"))
+    result = route_pipes_sequentially(case)
+    for p in result["pipes"]:
+        if not p.get("success"):
+            continue
+        if p.get("smoothing_reverted") and p.get("smoothing_revert_reason") == "final_global_conflict_recheck":
+            if int(p.get("bend_rule_violation_count", 0)) > 0:
+                assert p.get("degraded_result") is True
